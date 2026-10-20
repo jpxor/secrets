@@ -18,16 +18,20 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
     private val directory = File(cacheDirectory, "git-${UUID.randomUUID()}")
     private val branch = config.optString("branch", "main")
     private val relative = config.optString("directory", "Secrets").trim('/')
-    private val repo: Git
-    private val credentials = UsernamePasswordCredentialsProvider(config.optString("username"), config.optString("password"))
+    private lateinit var repo: Git
+    private val suppliedUri = URIish(config.getString("url"))
+    private val loginUsername = config.optString("username").ifBlank { suppliedUri.user.orEmpty() }
+    private val credentials = UsernamePasswordCredentialsProvider(loginUsername, config.optString("password"))
     private val transportCallback = org.eclipse.jgit.api.TransportConfigCallback { transport ->
         transport.timeout = 45
-        if (transport is TransportHttp && config.optString("username").isNotEmpty()) {
-            transport.setPreemptiveBasicAuthentication(config.getString("username"), config.optString("password"))
+        if (transport is TransportHttp && loginUsername.isNotEmpty()) {
+            transport.setPreemptiveBasicAuthentication(loginUsername, config.optString("password"))
         }
         if (transport is SshTransport) {
             transport.sshSessionFactory = object : JschConfigSessionFactory() {
                 override fun createDefaultJSch(fs: FS): JSch = secureJsch(config)
+                override fun createSession(provider: CredentialsProvider?, fs: FS, user: String?, password: String?, host: String, port: Int, hostConfig: OpenSshConfig.Host): Session =
+                    super.createSession(provider, fs, loginUsername.ifEmpty { user.orEmpty() }, password, host, port, hostConfig)
                 override fun configure(host: OpenSshConfig.Host, session: Session) {
                     session.setConfig("StrictHostKeyChecking", "yes")
                     session.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive")
@@ -38,14 +42,16 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
     }
     private val folder: File
     init {
-        val original = URIish(config.getString("url"))
-        val uri = if (original.scheme == "ssh" && original.user.isNullOrEmpty() && config.optString("username").isNotBlank()) original.setUser(config.getString("username")) else original
+        ensure(suppliedUri.pass == null) { "Repository URL must not contain a password." }
+        // Git persists remote URLs. Authentication belongs only in the encrypted configuration and memory.
+        val uri = suppliedUri.setUser(null)
         val url = uri.toString()
         ensure(uri.scheme in listOf("https", "ssh") && uri.host != null && uri.pass == null) {
             "Use an https:// or ssh:// repository URL without embedded passwords."
         }
         ensure(org.eclipse.jgit.lib.Repository.isValidRefName("refs/heads/$branch")) { "Invalid Git branch." }
         ensure(relative.isNotEmpty() && relative.split('/').none { it == ".." || it == ".git" || it.contains('\\') }) { "Invalid Git backup directory." }
+        resetPackCache()
         try {
             val refs = Git.lsRemoteRepository().setRemote(url).setCredentialsProvider(credentials)
                 .setTransportConfigCallback(transportCallback).call()
@@ -73,7 +79,12 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
                 current = current.parentFile ?: fail("Invalid repository path.")
             }
             folder.mkdirs()
-        } catch (e: Exception) { removeCache(); throw e }
+        } catch (e: Exception) {
+            if (::repo.isInitialized) repo.close()
+            resetPackCache()
+            removeCache()
+            throw e
+        }
     }
     override fun list(): List<RemoteFile> = Providers.sorted(folder.listFiles()?.filter {
         it.isFile && !java.nio.file.Files.isSymbolicLink(it.toPath())
@@ -115,15 +126,31 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
         java.nio.file.Files.walkFileTree(root, object : java.nio.file.SimpleFileVisitor<java.nio.file.Path>() {
             override fun visitFile(file: java.nio.file.Path, attrs: java.nio.file.attribute.BasicFileAttributes): java.nio.file.FileVisitResult {
                 if (!attrs.isSymbolicLink) file.toFile().setWritable(true)
-                java.nio.file.Files.delete(file)
+                deleteWithRetry(file)
                 return java.nio.file.FileVisitResult.CONTINUE
             }
             override fun postVisitDirectory(dir: java.nio.file.Path, error: java.io.IOException?): java.nio.file.FileVisitResult {
                 if (error != null) throw error
-                java.nio.file.Files.delete(dir)
+                deleteWithRetry(dir)
                 return java.nio.file.FileVisitResult.CONTINUE
             }
         })
     }
-    override fun close() { repo.close(); removeCache() }
+    private fun deleteWithRetry(path: java.nio.file.Path) {
+        for (attempt in 0..9) {
+            try { java.nio.file.Files.deleteIfExists(path); return }
+            catch (e: java.nio.file.FileSystemException) {
+                if (attempt == 9) throw e
+                Thread.sleep(25L * (attempt + 1))
+            }
+        }
+    }
+    private fun resetPackCache() {
+        org.eclipse.jgit.storage.file.WindowCacheConfig().apply {
+            setExposeStatsViaJmx(false)
+            setPackedGitMMAP(false)
+            install()
+        }
+    }
+    override fun close() { try { repo.close() } finally { resetPackCache(); removeCache() } }
 }

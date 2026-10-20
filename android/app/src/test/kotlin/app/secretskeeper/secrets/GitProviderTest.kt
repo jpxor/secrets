@@ -65,6 +65,9 @@ class GitProviderTest {
             GitProvider(cache, config).use { provider ->
                 assertTrue(provider.list().isEmpty())
                 provider.put(snapshot.name, snapshot.envelope)
+                val metadata = cache.listFiles()!!.single().resolve(".git/config").readText()
+                assertFalse("Git metadata must not persist a provider username", metadata.contains("tester"))
+                assertFalse("Git metadata must not persist a provider password", metadata.contains("test-password"))
             }
             GitProvider(cache, config).use { provider ->
                 assertEquals(snapshot.envelope, provider.read(provider.list().single()))

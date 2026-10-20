@@ -45,6 +45,8 @@ This is standard JGit transport, with JSch SSH—not GitHub-specific APIs and no
 
 HTTPS uses Basic authentication over TLS with a password/token; Kerberos/Negotiate and interactive browser-only Git login are outside v1 scope. Bouncy Castle supplies modern SSH cryptographic algorithms on older Android versions. Release shrinker rules preserve JSch's reflection-loaded implementations. Temporary Git clones disable desktop-only automatic GC and are removed after each operation; server-side repository maintenance remains the server's responsibility.
 
+Persisted clone URLs omit authentication user-info. SSH usernames and credentials are injected in memory; provider configuration remains encrypted. Pack caches are explicitly released with JMX/memory mapping disabled before symlink-safe cleanup. A local HTTPS test verifies rejection of untrusted certificates before credentials are sent.
+
 ## Recovery / account changes
 
 On a fresh phone choose **Restore from backup provider**, authorize or enter connection details, then enter the master passphrase. The app authenticates and decrypts the backup before replacing local data. A new biometric binding can then be enabled. Provider credentials are not inside exported vault files, so SFTP/Git connection details and keys must also be available separately.
