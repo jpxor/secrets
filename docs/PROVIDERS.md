@@ -6,6 +6,19 @@ Only one destination is active. Connection inspects the destination before activ
 
 ## Google Drive
 
+The maintainer registers each distributed signing identity once; users only choose their Google account and grant app-data access. Android AuthorizationClient identifies the app using its package and signing certificate, so no OAuth client secret, service-account key, API key, client-ID entry field or google-services.json is required in this implementation. The Android OAuth registration must exist in Google Cloud even though no client ID is supplied in code.
+
+Current locally distributed APK registration values (public):
+
+- Application name: `Secrets`.
+- Android package: `app.secretskeeper.secrets`.
+- Signing certificate SHA-1: `B3:00:7C:64:75:1D:B0:80:6C:6D:4D:A1:F1:E1:02:9C:CF:9F:92:4B`.
+- Scope: `https://www.googleapis.com/auth/drive.appdata` (non-sensitive app-data access).
+- Audience: External, initially Testing with explicitly added test users. Public releases require the appropriate production/branding setup.
+- Do not create a web client secret or service account. Registration administration and APK private signing keys stay outside the source repository. Register a separate Android client for any other signing certificate; do not rotate the installed app's signing key just to configure OAuth.
+
+Authorize first, then inspect existing backups, activate only after conflict checks, and verify an upload. A full Google account can authorize successfully but cannot accept new backups. The app distinguishes authorization cancellation, developer configuration/network failures and Drive's `storageQuotaExceeded` upload response without displaying provider response text.
+
 1. Create a Google Cloud project, enable Google Drive API and configure OAuth consent.
 2. Register an Android OAuth client for `app.secretskeeper.secrets` with the signing certificate SHA-1 of the APK being distributed. Debug and distribution signing identities differ. Use Gradle `signingReport` for fingerprints.
 3. Authorize `https://www.googleapis.com/auth/drive.appdata`. Development/testing consent may require listing test users. Complete any provider review required for distribution.

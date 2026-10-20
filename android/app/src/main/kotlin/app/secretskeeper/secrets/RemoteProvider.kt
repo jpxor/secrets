@@ -73,6 +73,10 @@ class CloudProvider(private val context: Context, private val config: JSONObject
         val req = if (authorized) request.newBuilder().header("Authorization", "Bearer ${token()}").build() else request
         http.newCall(req).execute().use { response ->
             if (!response.isSuccessful) {
+                if (type == "Google Drive") {
+                    // Inspect only a bounded body; no provider text is surfaced or logged.
+                    fail(GoogleDriveErrors.http(response.code, response.peekBody(16384).string()))
+                }
                 val hint = when (response.code) {
                     401, 403 -> "Authorization expired or access denied; reconnect the provider."
                     409 -> "The destination changed or the account has insufficient space."

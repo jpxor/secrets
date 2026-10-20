@@ -183,7 +183,7 @@ class MainActivity : FlutterFragmentActivity() {
                 try { startIntentSenderForResult(response.pendingIntent!!.intentSender, GOOGLE, null, 0, 0, 0) }
                 catch (e: Exception) { finishAuthError("Google authorization could not open. Check Google Play services and OAuth setup.") }
             } else finishGoogle(response)
-        }.addOnFailureListener { finishAuthError("Google authorization failed. Register this APK's package/signing fingerprint and enable Drive API.") }
+        }.addOnFailureListener { finishAuthError(GoogleDriveErrors.authorization((it as? com.google.android.gms.common.api.ApiException)?.statusCode)) }
     }
     private fun finishGoogle(response: com.google.android.gms.auth.api.identity.AuthorizationResult) {
         val result = pending ?: return
@@ -309,8 +309,12 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
             GOOGLE -> {
+                if (resultCode == Activity.RESULT_CANCELED && data == null) {
+                    finishAuthError(GoogleDriveErrors.authorization(null, canceled = true))
+                    return
+                }
                 try { finishGoogle(Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)) }
-                catch (_: Exception) { finishAuthError("Google authorization canceled or failed.") }
+                catch (e: Exception) { finishAuthError(GoogleDriveErrors.authorization((e as? com.google.android.gms.common.api.ApiException)?.statusCode)) }
             }
             OAUTH -> {
                 val response = data?.let { AuthorizationResponse.fromIntent(it) }
