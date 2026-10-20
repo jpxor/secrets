@@ -21,18 +21,26 @@ class VaultSession extends ChangeNotifier {
   DateTime? _backgroundAt;
   int backgroundSeconds = 30;
   bool get unlocked => _vault != null;
+  int get epoch => _epoch;
   OpenVault get vault =>
       _vault ?? (throw const VaultException('Vault is locked.'));
   List<SecretRecord> get records => List.unmodifiable(vault.records);
 
   Future<void> initialize() async {
-    exists = await store.read() != null;
+    // A read failure must never make a damaged existing vault look like an empty installation.
+    try {
+      exists = await store.read() != null;
+    } catch (_) {
+      exists = true;
+      rethrow;
+    }
     notifyListeners();
   }
 
   Future<void> _exclusive(Future<void> Function(int epoch) action) async {
-    if (busy)
+    if (busy) {
       throw const VaultException('An operation is already in progress.');
+    }
     busy = true;
     notifyListeners();
     final epoch = _epoch;
@@ -45,10 +53,11 @@ class VaultSession extends ChangeNotifier {
   }
 
   Future<void> create(String passphrase) => _exclusive((epoch) async {
-    if (exists)
+    if (exists) {
       throw const VaultException(
         'A vault already exists. Unlock or restore it.',
       );
+    }
     final result = await Isolate.run(() => VaultCrypto.create(passphrase));
     if (_epoch != epoch) {
       result.dispose();
@@ -70,8 +79,9 @@ class VaultSession extends ChangeNotifier {
 
   Future<void> unlock(String passphrase) => _exclusive((epoch) async {
     final text = await store.read();
-    if (text == null)
+    if (text == null) {
       throw const VaultException('No local vault. Create or restore one.');
+    }
     final envelope = VaultEnvelope.decode(text);
     final result = await Isolate.run(
       () => VaultCrypto.unlock(envelope, passphrase),
@@ -102,8 +112,9 @@ class VaultSession extends ChangeNotifier {
   Future<void> save(List<SecretRecord> records) => _exclusive((epoch) async {
     final current = vault;
     final next = await VaultCrypto.seal(current, records);
-    if (_epoch != epoch)
+    if (_epoch != epoch) {
       throw const VaultException('Vault locked before saving.');
+    }
     await store.write(next.encode());
     if (_epoch == epoch) {
       current.envelope = next;
@@ -148,8 +159,9 @@ class VaultSession extends ChangeNotifier {
     _lockTimer?.cancel();
     if (since != null &&
         (now ?? DateTime.now()).difference(since).inSeconds >=
-            backgroundSeconds)
+            backgroundSeconds) {
       lock();
+    }
   }
 
   void lock() {

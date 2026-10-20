@@ -5,8 +5,13 @@ import 'package:secrets/core/vault.dart';
 class MemoryStore implements VaultStore {
   String? content;
   bool failWrites = false;
+  bool failReads = false;
   @override
-  Future<String?> read() async => content;
+  Future<String?> read() async {
+    if (failReads) throw StateError('Corrupted local file');
+    return content;
+  }
+
   @override
   Future<void> write(String envelope, {bool replacement = false}) async {
     if (failWrites) throw StateError('Disk full');
@@ -15,6 +20,21 @@ class MemoryStore implements VaultStore {
 }
 
 void main() {
+  test(
+    'regression: unreadable local storage cannot be overwritten by Create',
+    () async {
+      final store = MemoryStore()..failReads = true;
+      final session = VaultSession(store);
+      await expectLater(session.initialize(), throwsStateError);
+      expect(session.exists, isTrue);
+      await expectLater(
+        session.create('a memorable master passphrase'),
+        throwsA(isA<VaultException>()),
+      );
+      expect(store.content, isNull);
+      session.dispose();
+    },
+  );
   test(
     'failed save/import preserve the original vault and active foreground use does not lock',
     () async {

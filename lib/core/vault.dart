@@ -74,8 +74,9 @@ class VaultEnvelope {
   });
   factory VaultEnvelope.decode(String text) {
     try {
-      if (utf8.encode(text).length > maxVaultBytes)
+      if (utf8.encode(text).length > maxVaultBytes) {
         throw const FormatException();
+      }
       final root = jsonDecode(text) as Map<String, dynamic>;
       final h = root['header'] as Map<String, dynamic>;
       if (h['format'] != 'Secrets' ||
@@ -144,10 +145,11 @@ class VaultCrypto {
       );
 
   static Future<OpenVault> create(String passphrase) async {
-    if (passphrase.length < 12)
+    if (passphrase.length < 12) {
       throw const VaultException(
         'Use a master passphrase of at least 12 characters.',
       );
+    }
     final key = randomBytes(32);
     final e = VaultEnvelope(
       {
@@ -215,8 +217,9 @@ class VaultCrypto {
       final records = (json['records'] as List)
           .map((r) => SecretRecord.fromJson(r as Map<String, dynamic>))
           .toList();
-      if (records.map((r) => r.id).toSet().length != records.length)
+      if (records.map((r) => r.id).toSet().length != records.length) {
         throw const FormatException();
+      }
       return OpenVault(envelope, Uint8List.fromList(key), records);
     } catch (_) {
       throw const VaultException(
@@ -233,8 +236,9 @@ class VaultCrypto {
     final data = utf8.encode(
       jsonEncode({'records': records.map((r) => r.toJson()).toList()}),
     );
-    if (data.length > maxVaultBytes ~/ 2)
+    if (data.length > maxVaultBytes ~/ 2) {
       throw const VaultException('Vault exceeds the supported size.');
+    }
     final payload = _jsonBox(
       await _aes.encrypt(
         data,
@@ -264,16 +268,18 @@ class SecretGenerator {
     bool digits = true,
     bool symbols = true,
   }) {
-    if (length < 4 || length > 256)
+    if (length < 4 || length > 256) {
       throw const VaultException('Password length must be 4–256.');
+    }
     final groups = [
       if (upper) 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       if (lower) 'abcdefghijklmnopqrstuvwxyz',
       if (digits) '0123456789',
       if (symbols) '!@#\$%^&*()-_=+[]{}:,.?',
     ];
-    if (groups.isEmpty)
+    if (groups.isEmpty) {
       throw const VaultException('Select at least one character group.');
+    }
     final random = Random.secure();
     final alphabet = groups.join();
     // Uniform rejection sampling over valid passwords, with at least one character from each selected group.
@@ -287,8 +293,9 @@ class SecretGenerator {
   }
 
   static String token({int bytes = 32, bool hex = false}) {
-    if (bytes < 16 || bytes > 256)
+    if (bytes < 16 || bytes > 256) {
       throw const VaultException('Token size must be 16–256 random bytes.');
+    }
     final value = randomBytes(bytes);
     return hex ? _hex(value) : base64UrlEncode(value).replaceAll('=', '');
   }
