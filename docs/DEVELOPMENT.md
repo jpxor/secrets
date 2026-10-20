@@ -31,6 +31,8 @@ Commit no credentials, local vaults, downloaded SDKs, signing material or OAuth 
 
 ## Release process
 
+After installing a signed release on an authorized USB device, run `./scripts/test-device-startup.ps1 -Device <adb-device-id>`. This restarts the app without clearing data and fails if it exits during startup. Run against the release APK: debug builds cannot expose shrinker failures in reflection-loaded Android components. WorkManager's generated Room database constructor must remain available to reflection.
+
 Keep Android signing keys outside the repository; back them up independently. Build a signed release using local Gradle properties/environment configuration. Publish no APK as production-ready until real-device restoration, biometrics, background backup, provider errors and interrupted-write scenarios have been exercised. Record exact commands/results and remaining limitations in PROGRESS.md.
 
 `scripts/build-release.ps1 -CreateSigningKey` creates an encrypted PKCS12 signing identity outside the repository in `%LOCALAPPDATA%/SecretsSigning` and builds an installable release APK. Its generated password is stored using Windows DPAPI, not plaintext; subsequent builds omit the switch. Preserve both the keystore and its password independently before distributing APKs. The DPAPI file can only be decrypted by the original Windows user/machine and is not itself a portable password backup. This signing identity is unrelated to vault encryption or user passphrases.

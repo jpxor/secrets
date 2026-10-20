@@ -64,3 +64,10 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - No Android phone was connected (`adb devices` empty). Physical fingerprint/key-invalidation, screen locking, clipboard behavior, background scheduling/reboot and full device-to-device recovery must follow docs/TESTING.md before production use.
 - Google OAuth package/signing registration and OneDrive/Dropbox public app registrations are not supplied. Cloud adapters are implemented; live account authorization, quota/error handling and fresh-phone cloud restoration have not been exercised. See docs/PROVIDERS.md. SFTP and Git SSH were tested against local real protocol servers; external hosts and Git HTTPS authentication need live-account checks.
 - No independent security audit has been performed. Lint dependency-update/style/resource warnings and optional JGit TLS-manager implementation warnings remain; actual configured HTTPS certificate rejection is covered by a passing test. No certificates/SSH host keys are silently trusted.
+
+## Physical-device installation — 2026-10-20
+
+- Installed the signed release on a Samsung Galaxy A54 (SM-A546W), Android API 36. First physical launch exposed an R8 regression: WorkManager could not reflectively construct WorkDatabase_Impl, so the app crashed before showing its UI.
+- Preserved public no-argument constructors on RoomDatabase subclasses. Added scripts/test-device-startup.ps1 to restart the installed APK without clearing data and check that its process survives startup. Confirmed this regression check fails on the original release and passes after rebuilding and reinstalling the fixed release.
+- Signed release build/signature verification, Dart formatting, flutter analyze and git diff --check pass. Installed successfully with adb install -r and opened on the phone. Existing app data was not cleared. Biometric, backup, vault-recovery and other interactive device checks remain pending user testing.
+- Replacement APK SHA-256: c3a6e00ea2cab0d4c37703dd181b5f84e89055a44ea9382ca29d2abcc42e9e7d. Signing identity is unchanged. This artifact supersedes the checksum in the earlier handoff above.
