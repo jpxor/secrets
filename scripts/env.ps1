@@ -1,0 +1,11 @@
+$ErrorActionPreference = 'Stop'
+$projectRoot = Split-Path -Parent $PSScriptRoot
+$toolRoot = Join-Path $projectRoot '.tools'
+$env:FLUTTER_ROOT = Join-Path $toolRoot 'flutter'
+$env:ANDROID_HOME = Join-Path $toolRoot 'android-sdk'
+$env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+$jdkDirectory = Get-ChildItem -LiteralPath (Join-Path $toolRoot 'java') -Directory | Select-Object -First 1
+if ($jdkDirectory) { $env:JAVA_HOME = $jdkDirectory.FullName }
+$env:PUB_CACHE = Join-Path $toolRoot 'pub-cache'
+$env:GRADLE_USER_HOME = Join-Path $toolRoot 'gradle-cache'
+$env:Path = "$env:FLUTTER_ROOT\bin;$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:Path"
