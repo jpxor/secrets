@@ -18,6 +18,50 @@ class _Store implements VaultStore {
 }
 
 void main() {
+  testWidgets('creation accepts eight characters and unbounded longer input', (
+    tester,
+  ) async {
+    String? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async {
+              result = await showDialog<String>(
+                context: context,
+                builder: (_) => const PassphraseDialog(
+                  title: 'Create vault',
+                  confirm: true,
+                ),
+              );
+            },
+            child: const Text('Open'),
+          ),
+        ),
+      ),
+    );
+    for (final phrase in [
+      '12345678',
+      List.filled(100, 'random words ').join(),
+    ]) {
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      final fields = find.byType(TextField);
+      for (final field in tester.widgetList<TextField>(fields)) {
+        expect(field.maxLength, isNull);
+      }
+      await tester.enterText(fields.at(0), '1234567');
+      await tester.enterText(fields.at(1), '1234567');
+      await tester.tap(find.text('Create'));
+      await tester.pumpAndSettle();
+      expect(find.text('Use at least 8 characters.'), findsOneWidget);
+      await tester.enterText(fields.at(0), phrase);
+      await tester.enterText(fields.at(1), phrase);
+      await tester.tap(find.text('Create'));
+      await tester.pumpAndSettle();
+      expect(result, phrase);
+    }
+  });
   testWidgets(
     'regression: switching providers never reuses another server password',
     (tester) async {

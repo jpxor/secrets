@@ -23,3 +23,4 @@ Manual encrypted export/import is always available independently of the provider
 - Retain 5 encrypted backup generations where the provider supports pruning; do not rewrite Git history.
 - Search only service, case-insensitively.
 - Master passphrase is required, biometrics optional.
+- New passphrases require at least 8 characters, with no maximum length. Recommend a longer passphrase made from several random words.

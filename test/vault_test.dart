@@ -5,6 +5,25 @@ import 'package:secrets/core/vault.dart';
 
 void main() {
   test(
+    'passphrase boundary and long passphrases survive portable recovery',
+    () async {
+      await expectLater(
+        VaultCrypto.create('1234567'),
+        throwsA(isA<VaultException>()),
+      );
+      for (final phrase in [
+        '12345678',
+        List.filled(100, 'random words ').join(),
+      ]) {
+        final vault = await VaultCrypto.create(phrase);
+        final restored = await VaultCrypto.unlock(vault.envelope, phrase);
+        restored.dispose();
+        vault.dispose();
+      }
+    },
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
+  test(
     'portable backup restores without a device key; tampering and wrong passphrases fail',
     () async {
       final vault = await VaultCrypto.create('a memorable master passphrase');

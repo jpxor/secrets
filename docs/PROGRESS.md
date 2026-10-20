@@ -71,3 +71,9 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - Preserved public no-argument constructors on RoomDatabase subclasses. Added scripts/test-device-startup.ps1 to restart the installed APK without clearing data and check that its process survives startup. Confirmed this regression check fails on the original release and passes after rebuilding and reinstalling the fixed release.
 - Signed release build/signature verification, Dart formatting, flutter analyze and git diff --check pass. Installed successfully with adb install -r and opened on the phone. Existing app data was not cleared. Biometric, backup, vault-recovery and other interactive device checks remain pending user testing.
 - Replacement APK SHA-256: c3a6e00ea2cab0d4c37703dd181b5f84e89055a44ea9382ca29d2abcc42e9e7d. Signing identity is unchanged. This artifact supersedes the checksum in the earlier handoff above.
+
+## Passphrase policy update — 2026-10-20
+
+- At the user's request, lowered new-vault passphrase minimum from 12 to 8 characters in both the creation dialog and crypto API. No maximum length is imposed; creation guidance recommends a longer passphrase with several random words. Existing vaults retain their original passphrases.
+- Added UI and portable-recovery regression tests for seven-character rejection, eight-character acceptance, and 1,300-character passphrases without truncation. All 10 Flutter tests pass; formatting, flutter analyze and signed release verification pass.
+- Updated the connected Samsung phone with adb install -r, preserving app data; the installed-release startup check passes and the app is open. APK SHA-256: bb4e0810ee7d52e52af3709cede78637093d939992bf295c1d1ddb1f95449335.

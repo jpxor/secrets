@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/vault.dart';
 
 class UnlockPage extends StatefulWidget {
   const UnlockPage({
@@ -154,7 +155,7 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
             const Padding(
               padding: EdgeInsets.only(bottom: 16),
               child: Text(
-                'Choose a memorable passphrase of at least 12 characters. You need it to recover your backup. There is no password reset.',
+                'Use at least 8 characters. We recommend a longer passphrase with several random words. There is no maximum length. You need it to recover your backup. There is no password reset.',
               ),
             ),
           TextField(
@@ -202,10 +203,11 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
   );
   void submit() {
     if (widget.confirm &&
-        (first.text.length < 12 || first.text != second.text)) {
+        (first.text.length < VaultCrypto.minimumPassphraseLength ||
+            first.text != second.text)) {
       setState(
-        () => error = first.text.length < 12
-            ? 'Use at least 12 characters.'
+        () => error = first.text.length < VaultCrypto.minimumPassphraseLength
+            ? 'Use at least 8 characters.'
             : 'Passphrases do not match.',
       );
       return;

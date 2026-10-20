@@ -134,6 +134,7 @@ class OpenVault {
 }
 
 class VaultCrypto {
+  static const minimumPassphraseLength = 8;
   static final _aes = AesGcm.with256bits();
   static Future<SecretKey> _passphraseKey(
     String passphrase,
@@ -145,9 +146,9 @@ class VaultCrypto {
       );
 
   static Future<OpenVault> create(String passphrase) async {
-    if (passphrase.length < 12) {
+    if (passphrase.length < minimumPassphraseLength) {
       throw const VaultException(
-        'Use a master passphrase of at least 12 characters.',
+        'Use a master passphrase of at least 8 characters.',
       );
     }
     final key = randomBytes(32);
