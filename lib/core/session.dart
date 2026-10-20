@@ -5,6 +5,14 @@ import 'package:flutter/foundation.dart';
 
 import 'vault.dart';
 
+// Keep isolate closures outside instance methods: shared closure contexts can
+// otherwise capture the session and its unsendable Flutter/platform listeners.
+Future<OpenVault> _createInIsolate(String passphrase) =>
+    Isolate.run(() => VaultCrypto.create(passphrase));
+
+Future<OpenVault> _unlockInIsolate(VaultEnvelope envelope, String passphrase) =>
+    Isolate.run(() => VaultCrypto.unlock(envelope, passphrase));
+
 abstract interface class VaultStore {
   Future<String?> read();
   Future<void> write(String envelope, {bool replacement = false});
@@ -58,7 +66,7 @@ class VaultSession extends ChangeNotifier {
         'A vault already exists. Unlock or restore it.',
       );
     }
-    final result = await Isolate.run(() => VaultCrypto.create(passphrase));
+    final result = await _createInIsolate(passphrase);
     if (_epoch != epoch) {
       result.dispose();
       return;
@@ -83,9 +91,7 @@ class VaultSession extends ChangeNotifier {
       throw const VaultException('No local vault. Create or restore one.');
     }
     final envelope = VaultEnvelope.decode(text);
-    final result = await Isolate.run(
-      () => VaultCrypto.unlock(envelope, passphrase),
-    );
+    final result = await _unlockInIsolate(envelope, passphrase);
     if (_epoch != epoch) {
       result.dispose();
       return;
@@ -125,9 +131,7 @@ class VaultSession extends ChangeNotifier {
   Future<void> restore(String text, String passphrase) =>
       _exclusive((epoch) async {
         final envelope = VaultEnvelope.decode(text);
-        final result = await Isolate.run(
-          () => VaultCrypto.unlock(envelope, passphrase),
-        );
+        final result = await _unlockInIsolate(envelope, passphrase);
         if (_epoch != epoch) {
           result.dispose();
           return;

@@ -77,3 +77,10 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - At the user's request, lowered new-vault passphrase minimum from 12 to 8 characters in both the creation dialog and crypto API. No maximum length is imposed; creation guidance recommends a longer passphrase with several random words. Existing vaults retain their original passphrases.
 - Added UI and portable-recovery regression tests for seven-character rejection, eight-character acceptance, and 1,300-character passphrases without truncation. All 10 Flutter tests pass; formatting, flutter analyze and signed release verification pass.
 - Updated the connected Samsung phone with adb install -r, preserving app data; the installed-release startup check passes and the app is open. APK SHA-256: bb4e0810ee7d52e52af3709cede78637093d939992bf295c1d1ddb1f95449335.
+
+## Vault creation isolate regression — 2026-10-20
+
+- Reproduced the reported first-vault creation failure with a regression test attaching an unsendable listener to VaultSession, as the real Flutter UI does. Isolate.run closures inside instance operations captured the session/listeners; the memory-only store tests had not exposed this.
+- Moved isolate closure construction into top-level helpers accepting only passphrase and encrypted envelope arguments. Applied to creation, passphrase unlock and restore. Encryption algorithms and file format are unchanged.
+- Confirmed the regression test fails before the fix (illegal unsendable isolate message) and all 11 Flutter tests pass after it, including create/lock/unlock/restore with the listener attached. No user passphrase or vault content was read or logged.
+- Formatting, flutter analyze, signed release build and signature verification pass. Reinstalled on the connected phone without clearing data; physical startup check passes. User must retry creation with their own passphrase on-device; no user vault was created by automation. Replacement APK SHA-256: e73a1c4bbb83df392036c2eb4f46c80433376a3ed484a7f23aeb0641bd012547.

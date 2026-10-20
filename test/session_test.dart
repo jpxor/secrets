@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'dart:isolate';
 import 'package:secrets/core/session.dart';
 import 'package:secrets/core/vault.dart';
 
@@ -20,6 +21,27 @@ class MemoryStore implements VaultStore {
 }
 
 void main() {
+  test(
+    'crypto isolates never capture session listeners or platform state',
+    () async {
+      final port = ReceivePort();
+      final session = VaultSession(MemoryStore());
+      session.addListener(() {
+        port.sendPort.send(session.busy);
+      });
+      try {
+        await session.create('12345678');
+        final backup = session.vault.envelope.encode();
+        session.lock();
+        await session.unlock('12345678');
+        await session.restore(backup, '12345678');
+        expect(session.unlocked, isTrue);
+      } finally {
+        session.dispose();
+        port.close();
+      }
+    },
+  );
   testWidgets(
     'regression: repeated background events keep the original lock deadline',
     (tester) async {
