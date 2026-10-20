@@ -148,9 +148,17 @@ class VaultSession extends ChangeNotifier {
       });
 
   void background({DateTime? now}) {
-    _backgroundAt ??= now ?? DateTime.now();
+    final current = now ?? DateTime.now();
+    _backgroundAt ??= current;
     _lockTimer?.cancel();
-    _lockTimer = Timer(Duration(seconds: backgroundSeconds), lock);
+    final remaining =
+        Duration(seconds: backgroundSeconds) -
+        current.difference(_backgroundAt!);
+    if (remaining <= Duration.zero) {
+      lock();
+    } else {
+      _lockTimer = Timer(remaining, lock);
+    }
   }
 
   void foreground({DateTime? now}) {

@@ -54,6 +54,7 @@ class _UnlockPageState extends State<UnlockPage> {
                   ),
                 if (widget.exists) ...[
                   TextField(
+                    enableIMEPersonalizedLearning: false,
                     controller: input,
                     obscureText: true,
                     enableSuggestions: false,
@@ -157,6 +158,7 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
               ),
             ),
           TextField(
+            enableIMEPersonalizedLearning: false,
             controller: first,
             autofocus: true,
             obscureText: true,
@@ -173,6 +175,7 @@ class _PassphraseDialogState extends State<PassphraseDialog> {
           if (widget.confirm) ...[
             const SizedBox(height: 16),
             TextField(
+              enableIMEPersonalizedLearning: false,
               controller: second,
               obscureText: true,
               enableSuggestions: false,

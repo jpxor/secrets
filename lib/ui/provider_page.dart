@@ -211,6 +211,7 @@ class _ProviderPageState extends State<ProviderPage> {
   }) => Padding(
     padding: const EdgeInsets.only(bottom: 16),
     child: TextField(
+      enableIMEPersonalizedLearning: false,
       controller: controller(key, initial),
       obscureText: secret && !multiline,
       autocorrect: false,

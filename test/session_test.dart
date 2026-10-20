@@ -20,6 +20,22 @@ class MemoryStore implements VaultStore {
 }
 
 void main() {
+  testWidgets(
+    'regression: repeated background events keep the original lock deadline',
+    (tester) async {
+      final session = VaultSession(MemoryStore());
+      addTearDown(session.dispose);
+      await tester.runAsync(
+        () => session.create('a memorable master passphrase'),
+      );
+      final start = DateTime(2026);
+      session.background(now: start);
+      await tester.pump(const Duration(seconds: 20));
+      session.background(now: start.add(const Duration(seconds: 20)));
+      await tester.pump(const Duration(seconds: 10));
+      expect(session.unlocked, isFalse);
+    },
+  );
   test(
     'regression: unreadable local storage cannot be overwritten by Create',
     () async {

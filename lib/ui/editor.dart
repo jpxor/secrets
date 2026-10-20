@@ -90,6 +90,7 @@ class _EditorPageState extends State<EditorPage> {
       padding: const EdgeInsets.all(20),
       children: [
         TextField(
+          enableIMEPersonalizedLearning: false,
           controller: service,
           minLines: 1,
           maxLines: 5,
@@ -97,6 +98,7 @@ class _EditorPageState extends State<EditorPage> {
         ),
         const SizedBox(height: 20),
         TextField(
+          enableIMEPersonalizedLearning: false,
           controller: username,
           minLines: 1,
           maxLines: 5,
@@ -106,6 +108,7 @@ class _EditorPageState extends State<EditorPage> {
         ),
         const SizedBox(height: 20),
         TextField(
+          enableIMEPersonalizedLearning: false,
           controller: secret,
           minLines: 1,
           maxLines: visible ? 10 : 1,

@@ -86,6 +86,7 @@ class _VaultPageState extends State<VaultPage> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
+              enableIMEPersonalizedLearning: false,
               onChanged: (v) => setState(() => query = v),
               decoration: const InputDecoration(
                 hintText: 'Search services',
