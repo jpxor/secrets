@@ -5,6 +5,7 @@ import 'package:secrets/core/vault.dart';
 import 'package:secrets/platform/android_bridge.dart';
 import 'package:secrets/ui/auth.dart';
 import 'package:secrets/ui/vault_page.dart';
+import 'package:secrets/ui/provider_page.dart';
 
 class _Store implements VaultStore {
   String? text;
@@ -17,6 +18,50 @@ class _Store implements VaultStore {
 }
 
 void main() {
+  testWidgets(
+    'regression: switching providers never reuses another server password',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProviderPage(
+            bridge: AndroidBridge(),
+            restoring: false,
+            onConnected: (_) async => true,
+          ),
+        ),
+      );
+      Future<void> choose(String name) async {
+        tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .jumpTo(0);
+        await tester.pumpAndSettle();
+        final selector = find.byType(DropdownButtonFormField<String>);
+        await tester.ensureVisible(selector);
+        await tester.tap(selector);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(name).last);
+        await tester.pumpAndSettle();
+      }
+
+      await choose('SFTP');
+      final password = find.byWidgetPredicate(
+        (w) =>
+            w is TextField && w.decoration?.labelText == 'Password (optional)',
+      );
+      await tester.ensureVisible(password);
+      await tester.enterText(password, 'test-server-password');
+      await choose('Git');
+      final token = tester.widget<TextField>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is TextField &&
+              w.decoration?.labelText == 'Password / access token (optional)',
+        ),
+      );
+      expect(token.controller!.text, isEmpty);
+    },
+  );
   testWidgets('service search does not expose username matches', (
     tester,
   ) async {

@@ -166,7 +166,7 @@ class MainActivity : FlutterFragmentActivity() {
                 candidateVaultId = envelope?.let { runCatching { JSONObject(it).getJSONObject("header").getString("id") }.getOrNull() }
                 mapOf("exists" to (latest != null), "backup" to envelope,
                     "backups" to files.map { it.name },
-                    "matchesLocal" to (candidateVaultId != null && store.snapshot()?.id == candidateVaultId))
+                    "matchesLocal" to (candidateVaultId != null && runCatching { store.snapshot()?.id }.getOrNull() == candidateVaultId))
             }
         }
     }

@@ -20,6 +20,7 @@ class ProviderPage extends StatefulWidget {
 class _ProviderPageState extends State<ProviderPage> {
   String provider = 'Google Drive';
   bool busy = false;
+  bool showPrivateKey = false;
   String? error;
   final fields = <String, TextEditingController>{};
   TextEditingController controller(String key, [String value = '']) =>
@@ -115,7 +116,14 @@ class _ProviderPageState extends State<ProviderPage> {
               : (v) => setState(() {
                   provider = v!;
                   error = null;
-                  fields.remove('clientId')?.dispose();
+                  showPrivateKey = false;
+                  final previous = fields.values.toList();
+                  fields.clear();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    for (final controller in previous) {
+                      controller.dispose();
+                    }
+                  });
                 }),
         ),
         const SizedBox(height: 20),
@@ -213,12 +221,28 @@ class _ProviderPageState extends State<ProviderPage> {
     child: TextField(
       enableIMEPersonalizedLearning: false,
       controller: controller(key, initial),
-      obscureText: secret && !multiline,
+      obscureText: secret && (!multiline || !showPrivateKey),
       autocorrect: false,
       enableSuggestions: false,
       minLines: 1,
-      maxLines: multiline ? 6 : 1,
-      decoration: InputDecoration(labelText: label),
+      maxLines: multiline && (!secret || showPrivateKey) ? 6 : 1,
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: secret && multiline
+            ? IconButton(
+                tooltip: showPrivateKey
+                    ? 'Hide private key'
+                    : 'Reveal private key',
+                onPressed: () =>
+                    setState(() => showPrivateKey = !showPrivateKey),
+                icon: Icon(
+                  showPrivateKey
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+              )
+            : null,
+      ),
       enabled: !busy,
     ),
   );
