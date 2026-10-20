@@ -10,13 +10,14 @@ import 'ui/settings.dart';
 import 'ui/provider_page.dart';
 
 class SecretsApp extends StatefulWidget {
-  const SecretsApp({super.key});
+  const SecretsApp({super.key, this.bridge});
+  final AndroidBridge? bridge;
   @override
   State<SecretsApp> createState() => _SecretsAppState();
 }
 
 class _SecretsAppState extends State<SecretsApp> with WidgetsBindingObserver {
-  final bridge = AndroidBridge();
+  late final bridge = widget.bridge ?? AndroidBridge();
   late final session = VaultSession(bridge);
   final navigator = GlobalKey<NavigatorState>();
   Map<String, dynamic> status = {};
@@ -117,8 +118,11 @@ class _SecretsAppState extends State<SecretsApp> with WidgetsBindingObserver {
   Future<void> unlock(String phrase) => run(() => session.unlock(phrase));
   Future<void> biometric() => run(() async {
     final epoch = session.epoch;
-    final key = await bridge.biometricKey();
-    if (key != null) {
+    final platformKey = await bridge.biometricKey();
+    if (platformKey != null) {
+      // Platform response buffers can be read-only. Own the temporary buffer
+      // before clearing it so cleanup cannot turn a successful unlock into an error.
+      final key = Uint8List.fromList(platformKey);
       try {
         if (session.epoch == epoch) await session.unlockWithKey(key);
       } finally {

@@ -92,3 +92,11 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - Added a physical-device regression procedure covering enrollment persistence, restart/unlock, cancellation and passphrase fallback. Physical authentication cannot be simulated by the existing host JVM tests.
 - Signed release build/signature verification, five Android JVM tests, Android lint and installed-release startup check pass. Updated phone using adb install -r without clearing data. APK SHA-256: 6b72cf25345e36358655390bd536a34615850ee2e9f926707f4556f7c0524b80.
 - Awaiting user's fingerprint retry on the updated app; enrollment/unlock success is not yet verified. No sanitized biometric failures have been logged since installation at the time of this entry.
+
+## Successful biometric unlock cleanup regression — 2026-10-20
+
+- User verified fingerprint enrollment and vault unlock now succeed after the native sequencing change, but an operation-failed snackbar appears after unlocking.
+- Reproduced this in a full SecretsApp widget test with a read-only platform key buffer: the vault opens successfully, then finally-block zeroing throws UnsupportedError. Added bridge injection to test the actual application flow and verified the test fails before the fix.
+- Copy platform-returned bytes into an owned mutable temporary buffer before decryption/cleanup. Continue clearing that temporary buffer; the unlocked vault holds its own independent key copy. Platform buffers remain subject to managed-runtime memory-erasure limitations already documented in SECURITY.md.
+- All 12 Flutter tests pass, including the new full-app no-error-after-biometric-unlock regression. No user secrets or passphrase were accessed.
+- Formatting, static analysis, signed release/signature verification and installed-device startup check pass. Updated the phone with adb install -r, preserving vault data and biometric binding. Physical fingerprint retry on this latest update is pending. APK SHA-256: 4cd19ff10026de6cc43bcbcec6252c076e616e67d55afcbc23a9e9b8016388de.
