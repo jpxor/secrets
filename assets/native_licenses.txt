@@ -1,0 +1,323 @@
+Native dependency notices collected from the distributed upstream archives.
+
+=== org.eclipse.jgit\org.eclipse.jgit (org.eclipse.jgit-6.10.1.202505221210-r.jar) ===
+
+--- about.html ---
+ 
+ 
+ 
+
+
+
+ 
+
+  Eclipse Distribution License - v 1.0  
+
+ Copyright (c) 2007, Eclipse Foundation, Inc. and its licensors.  
+
+ All rights reserved. 
+ Redistribution and use in source and binary forms, with or without modification, 
+	are permitted provided that the following conditions are met:
+  Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.  
+ Redistributions in binary form must reproduce the above copyright notice, 
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.  
+ Neither the name of the Eclipse Foundation, Inc. nor the names of its 
+	contributors may be used to endorse or promote products derived from 
+	this software without specific prior written permission.   
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE. 
+
+ 
+  SHA-1 UbcCheck - MIT  
+
+ Copyright (c) 2017: 
+ 
+Marc Stevens
+Cryptology Group
+Centrum Wiskunde & Informatica
+P.O. Box 94079, 1090 GB Amsterdam, Netherlands
+marc@marc-stevens.nl
+ 
+ 
+Dan Shumow
+Microsoft Research
+danshu@microsoft.com
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+ 
+  The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.  
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+
+ 
+
+ 
+
+
+=== org.eclipse.jgit\org.eclipse.jgit.ssh.jsch (org.eclipse.jgit.ssh.jsch-6.10.1.202505221210-r.jar) ===
+
+--- about.html ---
+ 
+ 
+ 
+
+
+
+ 
+
+  Eclipse Distribution License - v 1.0  
+
+ Copyright (c) 2007, Eclipse Foundation, Inc. and its licensors.  
+
+ All rights reserved. 
+ Redistribution and use in source and binary forms, with or without modification, 
+	are permitted provided that the following conditions are met:
+  Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.  
+ Redistributions in binary form must reproduce the above copyright notice, 
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.  
+ Neither the name of the Eclipse Foundation, Inc. nor the names of its 
+	contributors may be used to endorse or promote products derived from 
+	this software without specific prior written permission.   
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+POSSIBILITY OF SUCH DAMAGE. 
+
+ 
+  SHA-1 UbcCheck - MIT  
+
+ Copyright (c) 2017: 
+ 
+Marc Stevens
+Cryptology Group
+Centrum Wiskunde & Informatica
+P.O. Box 94079, 1090 GB Amsterdam, Netherlands
+marc@marc-stevens.nl
+ 
+ 
+Dan Shumow
+Microsoft Research
+danshu@microsoft.com
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+ 
+  The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.  
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+
+ 
+
+ 
+
+
+=== com.github.mwiede\jsch (jsch-0.2.26.jar) ===
+
+--- META-INF/LICENSE.JZlib.txt ---
+JZlib 0.0.* were released under the GNU LGPL license.  Later, we have switched 
+over to a BSD-style license. 
+
+------------------------------------------------------------------------------
+Copyright (c) 2000-2011 ymnk, JCraft,Inc. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright 
+     notice, this list of conditions and the following disclaimer in 
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+--- META-INF/LICENSE.jBCrypt.txt ---
+jBCrypt is subject to the following license:
+
+/*
+ * Copyright (c) 2006 Damien Miller <djm@mindrot.org>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+
+
+--- META-INF/LICENSE.txt ---
+JSch 0.0.* was released under the GNU LGPL license.  Later, we have switched 
+over to a BSD-style license. 
+
+------------------------------------------------------------------------------
+Copyright (c) 2002-2015 Atsuhiko Yamanaka, JCraft,Inc. 
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  1. Redistributions of source code must retain the above copyright notice,
+     this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright 
+     notice, this list of conditions and the following disclaimer in 
+     the documentation and/or other materials provided with the distribution.
+
+  3. The names of the authors may not be used to endorse or promote products
+     derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JCRAFT,
+INC. OR ANY CONTRIBUTORS TO THIS SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+=== com.squareup.okhttp3\okhttp (okhttp-4.12.0.jar) ===
+
+--- okhttp3/internal/publicsuffix/NOTICE ---
+Note that publicsuffixes.gz is compiled from The Public Suffix List:
+https://publicsuffix.org/list/public_suffix_list.dat
+
+It is subject to the terms of the Mozilla Public License, v. 2.0:
+https://mozilla.org/MPL/2.0/
+
+
+=== com.squareup.okio\okio-jvm (okio-jvm-3.6.0.jar) ===
+
+=== org.slf4j\slf4j-api (slf4j-api-1.7.30.jar) ===
+
+=== org.slf4j\slf4j-nop (slf4j-nop-1.7.36.jar) ===
+
+=== com.googlecode.javaewah\JavaEWAH (JavaEWAH-1.2.3.jar) ===
+
+AndroidX, AppAuth and OkHttp are distributed under Apache-2.0; see the Apache-2.0 text included with Secrets. Google Play services is provided under Google's SDK terms. Dart/Flutter package notices are listed separately by Flutter's license registry.
+
+=== Bouncy Castle 1.86 / META-INF/LICENSE.md ===
+MIT License (https://opensource.org/licenses/MIT)
+
+Copyright (c) 2000-2026 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org).
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute,
+sub license, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions: The above copyright notice and this
+permission notice shall be included in all copies or substantial portions of the Software.
+
+**THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT
+OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
+
+
+=== Bouncy Castle 1.86 / org/bouncycastle/LICENSE.class ===
+����   4 I             ) + ()V <clinit> <init> \Copyright (c) 2000-2023 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org)  DEALINGS IN THE SOFTWARE. XINCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR [LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR VOTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER RPURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE ^Permission is hereby granted, free of charge, to any person obtaining a copy of this software  STHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, dThe above copyright notice and this permission notice shall be included in all copies or substantial band associated documentation files (the "Software"), to deal in the Software without restriction,  eand/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, append fincluding without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,  java/io/PrintStream java/lang/Object java/lang/StringBuilder java/lang/System licenseText lineSeparator main org/bouncycastle/LICENSE org/bouncycastle/util/Strings out portions of the Software. println $subject to the following conditions: toString    ! " & ' Ljava/io/PrintStream; Ljava/lang/String; ()Ljava/lang/String; (Ljava/lang/String;)V ([Ljava/lang/String;)V -(Ljava/lang/String;)Ljava/lang/StringBuilder; ( 3 # 4   $ 5 , 5 * 6  8	 0 9	 1 :
+ - >
+ . ;
+ / ;
+ / =
+ / ?
+ 2 < Code ! 1 .     # 4        H        *� C�     	 % 7  H        
+� @� A� B�         H   �      �� /Y� D� F� G� F� G� F� F� G� F
+� F� G� F� F� G� F� F� G� F� F� G� F� G� F	� F� G� F� F� G� F� G� F� F� G� F� F� G� F� F� G� F� F� G� F� F� G� F� F� E� A�      
+
+=== Bouncy Castle 1.86 / org/bouncycastle/asn1/x509/NoticeReference.class ===
+����   4 �  ()I ()V ()Z (I)V <init> Bad sequence size:  $[Lorg/bouncycastle/asn1/ASN1Integer; add append convertVector elements getInstance getNoticeNumbers getObjectAt getOrganization hasMoreElements intValue "java/lang/IllegalArgumentException java/lang/Integer java/lang/Object java/lang/StringBuilder java/math/BigInteger java/util/Enumeration java/util/Vector nextElement noticeNumbers )org/bouncycastle/asn1/ASN1EncodableVector !org/bouncycastle/asn1/ASN1Integer  org/bouncycastle/asn1/ASN1Object "org/bouncycastle/asn1/ASN1Sequence !org/bouncycastle/asn1/DERSequence &org/bouncycastle/asn1/x509/DisplayText *org/bouncycastle/asn1/x509/NoticeReference organization size toASN1Primitive toString valueOf               ! " $Lorg/bouncycastle/asn1/ASN1Sequence; (Lorg/bouncycastle/asn1/x509/DisplayText; ()Ljava/lang/Object; ()Ljava/lang/String; (Ljava/lang/String;)V (I)Ljava/lang/StringBuilder; (Ljava/math/BigInteger;)V ()Ljava/util/Enumeration; ((I)Lorg/bouncycastle/asn1/ASN1Encodable; ((Lorg/bouncycastle/asn1/ASN1Encodable;)V .(Lorg/bouncycastle/asn1/ASN1EncodableVector;)V &()[Lorg/bouncycastle/asn1/ASN1Integer; &(I)Lorg/bouncycastle/asn1/ASN1Integer; '()Lorg/bouncycastle/asn1/ASN1Primitive; '(Lorg/bouncycastle/asn1/ASN1Sequence;)V *()Lorg/bouncycastle/asn1/x509/DisplayText; -(Ljava/lang/String;)Ljava/lang/StringBuilder; '(Ljava/lang/String;Ljava/util/Vector;)V M(Lorg/bouncycastle/asn1/ASN1Encodable;Lorg/bouncycastle/asn1/ASN1Encodable;)V @(Ljava/lang/String;Lorg/bouncycastle/asn1/ASN1EncodableVector;)V ?(Ljava/util/Vector;)Lorg/bouncycastle/asn1/ASN1EncodableVector; V(Lorg/bouncycastle/asn1/x509/DisplayText;Lorg/bouncycastle/asn1/ASN1EncodableVector;)V 7(Ljava/lang/Object;)Lorg/bouncycastle/asn1/ASN1Integer; 8(Ljava/lang/Object;)Lorg/bouncycastle/asn1/ASN1Sequence; <(Ljava/lang/Object;)Lorg/bouncycastle/asn1/x509/DisplayText; @(Ljava/lang/Object;)Lorg/bouncycastle/asn1/x509/NoticeReference;  7 # 8   $         9 & :  ; 
+ <  =  >  ? 	 @  A ' C  E 
+ G  I  J  K  L  M  N  O	 6 Q	 6 R
+ ) U
+ ) Z
+ * S
+ , U
+ , Y
+ , [
+ , c
+ / T
+ / ]
+ 0 W
+ 0 _
+ 1 \
+ 1 a
+ 1 h
+ 2 U
+ 3 T
+ 3 ^
+ 3 i
+ 4 `
+ 4 d
+ 5 Z
+ 5 j
+ 6 b
+ 6 e
+ 6 f
+ 6 g . V . X Code StackMapTable ! 6 2     # 8     7   	 
+  K  �   �     a� 0Y*� t� vL*� uM,� � � H,� � N-� -� � 1Y-� -� x:� !-� *� -� *� o� y:� � )Y� m�+� w���+�    �    �  0 .� & +�  1�    H  �        
+*+,� �� ��       J  �        *� 5Y+� �,� ��       L  �   "     *� {*+� l*� 4Y,� � k�       E  �   d     C*� {+� |� !� )Y� ,Y� p� s+� |� r� q� n�*+� }� �� l*+� }� ~� k�    �    � *  6 3   	  P  �   4     *� 6� *� 6�*� � 6Y*� ~� ���    �       F  �        *� l�       B  �   L     .*� k� |� 1L=*� k� |� +*� k� }� zS����+�    �    �  (�   % D  �        � 4Y*� l*� k� ��      

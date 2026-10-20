@@ -4,10 +4,12 @@
 .packages
 build/
 android/.gradle/
+android/.kotlin/
 android/local.properties
 android/key.properties
 *.jks
 *.keystore
+*.p12
 *.secrets
 *.credentials.json
 config.local.json

@@ -21,6 +21,9 @@ class BackupWorker(context: Context, parameters: WorkerParameters) : Worker(cont
             // Provider errors are sanitized where possible; never persist HTTP bodies or credentials.
             store.error(safeError(e))
             Result.retry()
+        } catch (_: LinkageError) {
+            store.error("This backup transport is incompatible with this Android runtime. Use encrypted export and report the device/Android version.")
+            Result.failure()
         }
     }
     companion object {

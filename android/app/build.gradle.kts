@@ -18,7 +18,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "app.secretskeeper.secrets"
         manifestPlaceholders["appAuthRedirectScheme"] = "app.secretskeeper.secrets"
         // You can update the following values to match your application needs.
@@ -35,10 +34,16 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             val signingFile = rootProject.file("key.properties")
-            if (signingFile.exists()) {
+            val environmentStore = System.getenv("SECRETS_KEYSTORE")
+            if (!environmentStore.isNullOrBlank()) {
+                signingConfig = signingConfigs.create("distribution") {
+                    storeFile = file(environmentStore)
+                    storePassword = System.getenv("SECRETS_STORE_PASSWORD")
+                    keyAlias = System.getenv("SECRETS_KEY_ALIAS") ?: "secrets"
+                    keyPassword = System.getenv("SECRETS_KEY_PASSWORD") ?: storePassword
+                }
+            } else if (signingFile.exists()) {
                 val props = Properties().apply { signingFile.inputStream().use { load(it) } }
                 signingConfig = signingConfigs.create("distribution") {
                     storeFile = file(props.getProperty("storeFile"))
@@ -46,6 +51,8 @@ android {
                     keyAlias = props.getProperty("keyAlias")
                     keyPassword = props.getProperty("keyPassword")
                 }
+            } else if (gradle.startParameter.taskNames.any { it.endsWith("assembleRelease") || it.endsWith("bundleRelease") }) {
+                throw GradleException("Release signing is required. Use scripts/build-release.ps1 or supply android/key.properties; debug signing is never used for releases.")
             }
         }
     }
@@ -65,6 +72,8 @@ dependencies {
         exclude(group = "com.jcraft", module = "jsch")
     }
     implementation("com.github.mwiede:jsch:0.2.26")
+    // Supplies modern SSH algorithms on Android versions without Java 15 crypto providers.
+    implementation("org.bouncycastle:bcprov-jdk18on:1.86")
     implementation("org.slf4j:slf4j-nop:1.7.36")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     testImplementation("junit:junit:4.13.2")
@@ -80,4 +89,10 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+// Lint scans this generated file but AGP does not otherwise track its contents.
+// Include it so correcting Flutter's Windows escaping invalidates stale lint results.
+tasks.matching { it.name.startsWith("lintAnalyze") }.configureEach {
+    inputs.file(rootProject.file("local.properties")).withPropertyName("localSdkProperties").optional()
 }

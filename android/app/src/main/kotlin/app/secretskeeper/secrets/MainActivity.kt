@@ -68,6 +68,7 @@ class MainActivity : FlutterFragmentActivity() {
         io.execute {
             try { val value = block(); handler.post { result.success(value) } }
             catch (e: Exception) { handler.post { result.error("secrets", BackupWorker.safeError(e), null) } }
+            catch (_: LinkageError) { handler.post { result.error("platform", "This operation is incompatible with this Android runtime. Use encrypted export and report the device/Android version.", null) } }
         }
     }
     private fun handle(call: MethodCall, result: MethodChannel.Result) {
@@ -153,7 +154,10 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 else -> result.notImplemented()
             }
-        } catch (e: Exception) { result.error("secrets", BackupWorker.safeError(e), null) }
+        } catch (e: Exception) {
+            if (pending === result) { pending = null; authCandidate = null; authProvider = null }
+            result.error("secrets", BackupWorker.safeError(e), null)
+        }
     }
 
     private fun inspect(config: JSONObject, result: MethodChannel.Result) = background(result) {

@@ -22,11 +22,15 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
     private val credentials = UsernamePasswordCredentialsProvider(config.optString("username"), config.optString("password"))
     private val transportCallback = org.eclipse.jgit.api.TransportConfigCallback { transport ->
         transport.timeout = 45
+        if (transport is TransportHttp && config.optString("username").isNotEmpty()) {
+            transport.setPreemptiveBasicAuthentication(config.getString("username"), config.optString("password"))
+        }
         if (transport is SshTransport) {
             transport.sshSessionFactory = object : JschConfigSessionFactory() {
                 override fun createDefaultJSch(fs: FS): JSch = secureJsch(config)
                 override fun configure(host: OpenSshConfig.Host, session: Session) {
                     session.setConfig("StrictHostKeyChecking", "yes")
+                    session.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive")
                     if (config.optString("password").isNotEmpty()) session.setPassword(config.getString("password"))
                 }
             }
@@ -59,6 +63,8 @@ class GitProvider(cacheDirectory: File, private val config: JSONObject) : Remote
                 }
             }
             folder = File(directory, relative)
+            // Desktop-only GC PID/JMX facilities are unavailable on Android; caches are discarded after use.
+            repo.repository.config.apply { setInt("gc", null, "auto", 0); save() }
             ensure(folder.canonicalPath.startsWith(directory.canonicalPath + File.separator))
             // Never follow symlinks controlled by the remote repository.
             var current = folder
