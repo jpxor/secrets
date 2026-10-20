@@ -10,11 +10,13 @@ The maintainer registers each distributed signing identity once; users only choo
 
 Current locally distributed APK registration values (public):
 
+- Registration metadata: `config/google-drive.public.json`. Created in the dedicated Secrets project; Drive API is enabled. This file contains no secrets and is documentation, not runtime configuration: Play services matches the package and signer to the registered Android client.
 - Application name: `Secrets`.
 - Android package: `app.secretskeeper.secrets`.
 - Signing certificate SHA-1: `B3:00:7C:64:75:1D:B0:80:6C:6D:4D:A1:F1:E1:02:9C:CF:9F:92:4B`.
 - Scope: `https://www.googleapis.com/auth/drive.appdata` (non-sensitive app-data access).
 - Audience: External, initially Testing with explicitly added test users. Public releases require the appropriate production/branding setup.
+- The owner account is configured as a test user. Additional testers must be added in Google Auth Platform > Audience. Personal email addresses/test-user lists are managed in Google Cloud and are not committed here. Support and developer contact addresses were explicitly approved by the owner and configured in Google Cloud.
 - Do not create a web client secret or service account. Registration administration and APK private signing keys stay outside the source repository. Register a separate Android client for any other signing certificate; do not rotate the installed app's signing key just to configure OAuth.
 
 Authorize first, then inspect existing backups, activate only after conflict checks, and verify an upload. A full Google account can authorize successfully but cannot accept new backups. The app distinguishes authorization cancellation, developer configuration/network failures and Drive's `storageQuotaExceeded` upload response without displaying provider response text.

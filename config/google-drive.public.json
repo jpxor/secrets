@@ -1,0 +1,8 @@
+{
+  "projectId": "booming-banner-512323-p7",
+  "projectNumber": "1088511768988",
+  "androidPackage": "app.secretskeeper.secrets",
+  "signingCertificateSha1": "B3:00:7C:64:75:1D:B0:80:6C:6D:4D:A1:F1:E1:02:9C:CF:9F:92:4B",
+  "androidOAuthClientId": "1088511768988-j094ofho34q3gk480r4pi6lbagq7ob4s.apps.googleusercontent.com",
+  "scope": "https://www.googleapis.com/auth/drive.appdata"
+}
