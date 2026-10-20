@@ -24,6 +24,8 @@ When a regression is found: reproduce it with the smallest behavior-level test, 
 1. Install using `adb install -r build/app/outputs/flutter-apk/app-debug.apk` with an authorized USB-debugging device.
 2. Create a vault, add multiline/Unicode records, generate both secret styles, search only service, reveal/copy/edit/delete.
 3. Enable biometric unlock, lock, unlock with fingerprint, cancel the prompt, change enrolled fingerprints and verify passphrase fallback.
+
+   Biometric binding regression: on the signed release, unlock an existing vault with its passphrase, enable biometrics and authenticate. The switch must remain on without a key-unavailable error. Restart the app, use fingerprint unlock and verify a known test record. Cancel enrollment and verify passphrase unlock still works. Exercise this on a physical Samsung/API 36 device: host JVM tests cannot reproduce authentication-bound Keystore operations. Vault-ID AAD must be supplied to the authenticated cipher after successful fingerprint authentication, before doFinal; do not remove AAD or disable key authentication to work around failures.
 4. Scroll/read for more than 30 seconds: remain unlocked. Background 29 seconds: remain unlocked; 30 seconds: lock. Phone screen off: lock immediately. Verify screen captures/recents do not expose records.
 5. Copy a secret, replace clipboard with a different value, wait 30 seconds: newer content survives. Repeat without replacement; check best-effort clearing, including OS background restrictions.
 6. Export encrypted file, clear app data or install on another device, restore with passphrase. Wrong passphrase/tampering must preserve current vault. Import populated vault warns. Verify restored records before relying on backup.

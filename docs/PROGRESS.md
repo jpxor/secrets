@@ -84,3 +84,11 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - Moved isolate closure construction into top-level helpers accepting only passphrase and encrypted envelope arguments. Applied to creation, passphrase unlock and restore. Encryption algorithms and file format are unchanged.
 - Confirmed the regression test fails before the fix (illegal unsendable isolate message) and all 11 Flutter tests pass after it, including create/lock/unlock/restore with the listener attached. No user passphrase or vault content was read or logged.
 - Formatting, flutter analyze, signed release build and signature verification pass. Reinstalled on the connected phone without clearing data; physical startup check passes. User must retry creation with their own passphrase on-device; no user vault was created by automation. Replacement APK SHA-256: e73a1c4bbb83df392036c2eb4f46c80433376a3ed484a7f23aeb0641bd012547.
+
+## Biometric binding investigation — 2026-10-20
+
+- User reports fingerprint authentication succeeds during enrollment, then the app reports biometric key unavailable. The previous callback hid the underlying exception, and historical device logs contained no matching diagnostic.
+- Moved vault-ID AES-GCM AAD submission from pre-prompt cipher initialization into the authenticated callback for enrollment and unlock. Authentication-bound Keystore keys, strong biometrics and vault-ID binding remain required. Added secret-free exception category/code-location diagnostics (never exception messages, key bytes or vault data).
+- Added a physical-device regression procedure covering enrollment persistence, restart/unlock, cancellation and passphrase fallback. Physical authentication cannot be simulated by the existing host JVM tests.
+- Signed release build/signature verification, five Android JVM tests, Android lint and installed-release startup check pass. Updated phone using adb install -r without clearing data. APK SHA-256: 6b72cf25345e36358655390bd536a34615850ee2e9f926707f4556f7c0524b80.
+- Awaiting user's fingerprint retry on the updated app; enrollment/unlock success is not yet verified. No sanitized biometric failures have been logged since installation at the time of this entry.

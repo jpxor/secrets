@@ -227,9 +227,10 @@ class MainActivity : FlutterFragmentActivity() {
         if (Build.VERSION.SDK_INT >= 30) builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG)
         else { @Suppress("DEPRECATION") builder.setUserAuthenticationValidityDurationSeconds(-1) }
         val protectedKey = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore").apply { init(builder.build()) }.generateKey()
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, protectedKey); updateAAD(id.toByteArray()) }
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply { init(Cipher.ENCRYPT_MODE, protectedKey) }
         prompt(cipher, result) { authenticated ->
-            try { store.saveBiometric(JSONObject().put("id", id).put("iv", LocalStore.base64(authenticated.iv))
+            try { authenticated.updateAAD(id.toByteArray())
+                store.saveBiometric(JSONObject().put("id", id).put("iv", LocalStore.base64(authenticated.iv))
                 .put("data", LocalStore.base64(authenticated.doFinal(key)))); null }
             finally { key.fill(0) }
         }
@@ -241,15 +242,21 @@ class MainActivity : FlutterFragmentActivity() {
         val key = ks.getKey("secrets.biometric", null) as? SecretKey ?: fail("Biometric key unavailable. Use the master passphrase.")
         val cipher = Cipher.getInstance("AES/GCM/NoPadding").apply {
             init(Cipher.DECRYPT_MODE, key, GCMParameterSpec(128, LocalStore.unbase64(blob.getString("iv"))))
-            updateAAD(blob.getString("id").toByteArray())
         }
-        prompt(cipher, result) { it.doFinal(LocalStore.unbase64(blob.getString("data"))) }
+        prompt(cipher, result) {
+            it.updateAAD(blob.getString("id").toByteArray())
+            it.doFinal(LocalStore.unbase64(blob.getString("data")))
+        }
     }
     private fun prompt(cipher: Cipher, result: MethodChannel.Result, success: (Cipher) -> Any?) {
         val prompt = BiometricPrompt(this, ContextCompat.getMainExecutor(this), object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(auth: BiometricPrompt.AuthenticationResult) {
                 try { result.success(success(auth.cryptoObject!!.cipher!!)) }
-                catch (_: Exception) { result.error("biometric", "Biometric key unavailable. Use the master passphrase and enable biometrics again.", null) }
+                catch (e: Exception) {
+                    // Only exception types and code locations: never log key material or exception messages.
+                    android.util.Log.e("SecretsBiometric", e.javaClass.simpleName + " at " + e.stackTrace.take(5).joinToString(" | "))
+                    result.error("biometric", "Biometric setup/unlock failed (${e.javaClass.simpleName}). Use the master passphrase and enable biometrics again.", null)
+                }
             }
             override fun onAuthenticationError(code: Int, message: CharSequence) { result.error("biometric", message.toString(), null) }
         })
