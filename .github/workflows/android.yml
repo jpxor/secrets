@@ -1,0 +1,40 @@
+name: Android checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  signing-password-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/test-signing.ps1
+        shell: pwsh
+      - run: ./scripts/normalize-local-properties.ps1 -SelfTest
+        shell: pwsh
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --debug
+      - run: bash gradlew :app:testDebugUnitTest :app:lintDebug --console=plain
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: secrets-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
