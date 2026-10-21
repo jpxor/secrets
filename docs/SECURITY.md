@@ -20,7 +20,7 @@ Background workers upload encrypted envelopes without unlocking the vault. Provi
 
 ## Review requirements
 
-SFTP connection diagnostics classify failures in memory into fixed stage/reason codes. Only those codes reach Android logs; displayed guidance is fixed text. Raw library messages and throwable causes are discarded at the connection boundary, so credentials, endpoints and paths cannot leak through diagnostic messages. Host-key challenges retain their separate explicit trust flow.
+SFTP connection and file-operation diagnostics classify failures in memory into fixed stage/reason codes. Only those codes reach Android logs; displayed guidance is fixed text with self-service server checks or app-update guidance for client failures. Raw library messages and throwable causes are discarded at the provider boundary, so credentials, endpoints and paths cannot leak through diagnostic messages. Host-key challenges retain their separate explicit trust flow. Release shrinking preserves JSch package boundaries: its package-private algorithms must remain accessible to the session class that instantiates them reflectively.
 
 SFTP setup uses explicit trust on first use: the SSH handshake rejects an unknown
 key before user authentication, returns only public fingerprint metadata to a

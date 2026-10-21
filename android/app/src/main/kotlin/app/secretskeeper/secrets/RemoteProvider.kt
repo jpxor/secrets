@@ -171,25 +171,32 @@ class SftpProvider(config: JSONObject) : RemoteProvider {
             throw trace.failure(e)
         }
     }
-    override fun list(): List<RemoteFile> = Providers.sorted(sftp.ls(".").mapNotNull {
+    private fun <T> operation(stage: SftpStage, action: () -> T): T {
+        trace.stage = stage
+        return try { action() } catch (e: Exception) {
+            if (e is SecretsException) throw e
+            throw trace.failure(e)
+        }
+    }
+    override fun list(): List<RemoteFile> = operation(SftpStage.LIST) { Providers.sorted(sftp.ls(".").mapNotNull {
         val item = it as ChannelSftp.LsEntry
         if (!item.attrs.isDir) RemoteFile(item.filename, item.filename) else null
-    })
-    override fun read(file: RemoteFile): String {
+    }) }
+    override fun read(file: RemoteFile): String = operation(SftpStage.DOWNLOAD) {
         ensure(Providers.isSnapshot(file.locator) && sftp.stat(file.locator).size <= LocalStore.MAX_BYTES) { "Invalid or oversized remote backup." }
-        return sftp.get(file.locator).use { input ->
+        sftp.get(file.locator).use { input ->
             val out = java.io.ByteArrayOutputStream()
             val buffer = ByteArray(8192)
             while (true) { val n = input.read(buffer); if (n < 0) break; ensure(out.size() + n <= LocalStore.MAX_BYTES); out.write(buffer, 0, n) }
             out.toString("UTF-8")
         }
     }
-    override fun put(name: String, envelope: String) {
+    override fun put(name: String, envelope: String) = operation(SftpStage.UPLOAD) {
         ensure(Providers.isSnapshot(name))
         val temporary = ".upload-${UUID.randomUUID()}"
         try { sftp.put(ByteArrayInputStream(envelope.toByteArray()), temporary); sftp.rename(temporary, name) }
         finally { try { sftp.rm(temporary) } catch (_: SftpException) {} }
     }
-    override fun delete(file: RemoteFile) { ensure(Providers.isSnapshot(file.locator)); sftp.rm(file.locator) }
+    override fun delete(file: RemoteFile) = operation(SftpStage.DELETE) { ensure(Providers.isSnapshot(file.locator)); sftp.rm(file.locator) }
     override fun close() { sftp.disconnect(); session.disconnect() }
 }

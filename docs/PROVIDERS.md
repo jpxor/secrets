@@ -36,7 +36,26 @@ Compare the displayed fingerprint with the server administrator's value through 
 
 Unknown keys are rejected before authentication until explicitly approved; the app reconnects with the approved key pinned and saves it when the backup destination is activated. Existing saved trust is reused only for the same host and port. A different key is rejected, including by background jobs. Reconnect in Settings to review the old/new fingerprints and explicitly choose **Trust new key** only after verifying the change. Cancellation leaves the existing provider unchanged; a server that changes keys between the prompt and reconnection is rejected again.
 
-SFTP password, private-key and key-passphrase fields have show/hide controls. Connection failures display a fixed `[SFTP STAGE/REASON]` diagnostic and targeted guidance. Android logs under `SecretsSftp` contain only that fixed code, including for background connection failures; raw SSH messages, credentials, endpoints and directory paths are never logged. Share the code when reporting a failure. No separate ping or server-test button is needed: connecting tests the actual SSH service.
+SFTP password, private-key and key-passphrase fields have show/hide controls. Failures display selectable guidance and a fixed `[SFTP STAGE/REASON]` diagnostic. Android logs under `SecretsSftp` contain only that fixed code, including for background failures; raw SSH messages, credentials, endpoints and directory paths are never logged. Connecting tests the actual SSH service; ICMP ping is not required.
+
+### Troubleshoot your server
+
+The error identifies where the operation stopped and what to check yourself. Consult the server's SSH/SFTP log at the time of the attempt. On an OpenSSH server this is usually the system journal for `ssh`/`sshd` or its authentication log; location depends on the operating system. Keep those raw logs private because they may contain account names and addresses.
+
+| Diagnostic reason | What to check |
+| --- | --- |
+| `DNS`, `TIMEOUT`, `NO_ROUTE`, `CONNECTION_REFUSED` | Host and SSH port, running SSH service, DNS, listening interface, firewall and VPN. A private LAN address needs a local network or VPN route. |
+| `NOT_SSH` | Use the SSH/SFTP service port, not FTP, FTPS or HTTP. |
+| `*_ALGORITHMS`, `ALGORITHM_NEGOTIATION` | Update app/server and inspect `KexAlgorithms`, `HostKeyAlgorithms`, `Ciphers`, `MACs`. Keep modern algorithms and host verification enabled. |
+| `AUTHENTICATION_REJECTED` | Username, password or key/passphrase, allowed authentication methods, account restrictions and server authentication log. |
+| `SFTP_UNAVAILABLE` | Enable the SFTP subsystem, check account-specific `Match`/`ForceCommand` rules. SSH shell access alone does not prove SFTP is allowed. |
+| `PATH_NOT_FOUND` | Path within the account's SFTP/chroot root, which can differ from the filesystem root. |
+| `PERMISSION_DENIED` | Directory ownership, ACLs and list/read/create/rename/delete rights. |
+| `SERVER_FILE_FAILURE`, `SFTP_PROTOCOL` | Disk space, account quota, read-only mounts and SFTP server log. |
+| `CLIENT_CRYPTO_ERROR`, `CRYPTO_UNAVAILABLE` | Update Secrets. This identifies an app/runtime problem, not a bad password or directory permission. |
+| `SERVER_SIGNATURE_INVALID` | Stop and inspect server host-key configuration and logs. Do not bypass verification. |
+
+An unknown `KEY_EXCHANGE` failure occurs before login: changing the password cannot fix it. Check the server's SSH log and update app/server. The stage also distinguishes directory setup, listing, downloading, uploading and deleting, so a file-operation failure is not mistaken for a login failure.
 
 ## Recovery / account changes
 
