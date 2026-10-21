@@ -34,6 +34,17 @@ The signed release uses a different signing identity from debug builds. If Andro
 
 ## Each remote provider
 
-Use disposable test accounts/directories; never real secrets during initial validation. Test connect to empty destination, edit/upload, offline edits, app restart, reconnect, expired authorization, full storage, interrupted upload, retention and fresh-install recovery. Inspect remote bytes for plaintext. For SSH, reject unknown/wrong host keys.
+Use disposable test accounts/directories; never real secrets during initial validation. Test connect to empty destination, edit/upload, offline edits, app restart, reconnect, expired authorization, full storage, interrupted upload, retention and fresh-install recovery. Inspect remote bytes for plaintext.
+
+For SFTP, connect without manually entering a fingerprint: verify the trust dialog
+shows the endpoint and independently confirmed SHA256 fingerprint. Cancel and
+confirm no authentication/provider activation occurred. Approve and verify backup
+and restore. Reconnect to the same configured endpoint and confirm the saved pin
+is reused. Replace the server key: background backup must fail without sending
+credentials, and foreground setup must show old/new keys with a separate explicit
+decision. Cancel to retain the old configuration. A key changed again between
+approval and reconnection must fail closed. Native protocol tests cover the
+pre-authentication rejection; physical-phone confirmation/restore remains a
+separate acceptance check.
 
 Cloud registrations, account credentials and a physical Android device are external dependencies. Passing unit/widget tests is not evidence these end-to-end checks passed. Update PROGRESS.md with actual results before labeling an APK ready for production secrets.

@@ -40,6 +40,7 @@ class BackupWorker(context: Context, parameters: WorkerParameters) : Worker(cont
         fun safeError(e: Exception): String {
             var cause: Throwable? = e
             repeat(8) {
+                if (cause is SshHostKeyException) return "SSH host key is unknown or changed. Reconnect SFTP in Settings to review and explicitly approve the server key."
                 if (cause is SecretsException) return cause.message.orEmpty().take(300)
                 cause = cause?.cause
             }

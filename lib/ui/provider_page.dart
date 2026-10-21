@@ -40,7 +40,6 @@ class _ProviderPageState extends State<ProviderPage> {
           'password',
           'privateKey',
           'keyPassphrase',
-          'fingerprint',
         ]) {
           config[key] = value(key);
         }
@@ -56,7 +55,8 @@ class _ProviderPageState extends State<ProviderPage> {
           throw const VaultException('Enter a host, username and valid port.');
         }
       }
-      final result = await widget.bridge.connect(config);
+      final result = await connectWithHostTrust(config);
+      if (result == null) return;
       if (!mounted) return;
       final done = await widget.onConnected(result);
       if (done && mounted) Navigator.pop(context);
@@ -73,6 +73,83 @@ class _ProviderPageState extends State<ProviderPage> {
     } finally {
       if (mounted) setState(() => busy = false);
     }
+  }
+
+  Future<Map<String, dynamic>?> connectWithHostTrust(
+    Map<String, String> config,
+  ) async {
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        return await widget.bridge.connect(config);
+      } on PlatformException catch (e) {
+        if (e.code != 'ssh_host_key' || config['type'] != 'SFTP') rethrow;
+        final details = e.details;
+        if (details is! Map || details['fingerprint'] is! String) rethrow;
+        final fingerprint = details['fingerprint'] as String;
+        final previous = details['previousFingerprint'] as String? ?? '';
+        if (!RegExp(r'^SHA256:[A-Za-z0-9+/]{43}$').hasMatch(fingerprint)) {
+          throw const VaultException(
+            'The server returned an invalid host key.',
+          );
+        }
+        if (!mounted) return null;
+        final trusted = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text(
+              previous.isEmpty
+                  ? 'Trust this SSH host?'
+                  : 'SSH host key changed',
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${config['host']}:${config['port']}'),
+                  const SizedBox(height: 16),
+                  Text(
+                    previous.isEmpty
+                        ? 'This is the first connection to this host. Compare its fingerprint with the server owner before trusting it.'
+                        : 'This host has a different key than the one you trusted. This could mean the server was replaced or your connection is being intercepted. Confirm the change with the server owner before continuing.',
+                  ),
+                  if (previous.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const Text('Previously trusted fingerprint'),
+                    SelectableText(previous),
+                  ],
+                  const SizedBox(height: 16),
+                  const Text('Server fingerprint'),
+                  SelectableText(fingerprint),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Your login credentials are not sent until the host key is trusted.',
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  previous.isEmpty ? 'Trust and connect' : 'Trust new key',
+                ),
+              ),
+            ],
+          ),
+        );
+        if (trusted != true || !mounted) return null;
+        config['fingerprint'] = fingerprint;
+      }
+    }
+    throw const VaultException(
+      'The server key changed repeatedly. Connect again after checking the server.',
+    );
   }
 
   @override
@@ -129,9 +206,8 @@ class _ProviderPageState extends State<ProviderPage> {
             multiline: true,
           ),
           field('keyPassphrase', 'SSH key passphrase (optional)', secret: true),
-          field('fingerprint', 'SSH host fingerprint (SHA256:…)'),
           const Text(
-            'For SSH/SFTP, verify the host fingerprint independently and enter it here. An unknown or changed server key is rejected.',
+            'When connecting, review and approve the server’s SSH fingerprint. The trusted key is saved with this backup destination; a changed key is rejected until you explicitly approve it.',
           ),
         ],
         if (error != null)

@@ -20,4 +20,15 @@ Background workers upload encrypted envelopes without unlocking the vault. Provi
 
 ## Review requirements
 
+SFTP setup uses explicit trust on first use: the SSH handshake rejects an unknown
+key before user authentication, returns only public fingerprint metadata to a
+confirmation dialog, then reconnects with the approved key pinned. Approval is
+bound to the fixed host/port used by that setup attempt. Activating the destination
+stores the pin with its protected provider configuration. A saved pin is reused
+only for the same host/port. Changed keys fail closed in background jobs and require
+a separate foreground confirmation showing both old and new fingerprints. No
+trust-all connection, silent pin update or credential-bearing probe is used.
+Users should compare the displayed fingerprint with the server owner through an
+independent trusted channel; confirmation alone cannot authenticate a first contact.
+
 Test wrong passphrases, tampering, format bounds, replacement-phone recovery, stale upload ordering, interrupted persistence and failed retries. Native biometric binding, clipboard replacement and screen locking need real-device checks. No security audit has yet been performed.

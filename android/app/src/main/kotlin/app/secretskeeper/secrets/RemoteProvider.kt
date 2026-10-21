@@ -109,13 +109,15 @@ class GoogleDriveProvider(private val context: Context, private val config: JSON
     }
 }
 
-fun secureJsch(config: JSONObject): JSch = JSch().apply {
+fun secureJsch(config: JSONObject, onUntrusted: (SshHostKeyException) -> Unit = {}): JSch = JSch().apply {
     val pin = config.optString("fingerprint").trim()
     setHostKeyRepository(object : HostKeyRepository {
         override fun check(host: String?, key: ByteArray): Int {
             val actual = "SHA256:" + java.util.Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(key))
-            ensure(pin.isNotEmpty() && MessageDigest.isEqual(actual.toByteArray(), pin.toByteArray())) {
-                "SSH host key not trusted or changed. Verify this fingerprint independently, then enter it explicitly: $actual"
+            if (pin.isEmpty() || !MessageDigest.isEqual(actual.toByteArray(), pin.toByteArray())) {
+                val challenge = SshHostKeyException(actual, pin)
+                onUntrusted(challenge)
+                throw challenge
             }
             return HostKeyRepository.OK
         }
@@ -132,15 +134,16 @@ fun secureJsch(config: JSONObject): JSch = JSch().apply {
 }
 
 class SftpProvider(config: JSONObject) : RemoteProvider {
-    private val session = secureJsch(config).getSession(config.getString("username"), config.getString("host"), config.optInt("port", 22))
+    private var hostKeyChallenge: SshHostKeyException? = null
+    private val session = secureJsch(config) { hostKeyChallenge = it }.getSession(config.getString("username"), config.getString("host"), config.optInt("port", 22))
     private val sftp: ChannelSftp
     init {
         session.setConfig("StrictHostKeyChecking", "yes")
         session.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive")
         config.optString("password").takeIf { it.isNotEmpty() }?.let { session.setPassword(it) }
         session.timeout = 30000
-        session.connect(30000)
         try {
+            try { session.connect(30000) } catch (e: Exception) { throw (hostKeyChallenge ?: e) }
             sftp = (session.openChannel("sftp") as ChannelSftp).apply { connect(30000) }
             val directory = config.optString("directory", "Secrets").trim()
             ensure(directory.isNotEmpty() && directory.split('/').none { it == ".." }) { "Invalid backup directory." }

@@ -30,9 +30,11 @@ Google Play services must be available. Revoked consent/account changes require 
 
 ## SFTP
 
-Supply host, port (22 default), username, password or private key, optional key passphrase, directory and SHA256 server host-key fingerprint. The directory is created if permissions allow. Use a dedicated directory with write/list/read/delete permissions. All network operations use SSH; there is no shell-command interpolation.
+Supply host, port (22 default), username, password or private key, optional key passphrase and directory. Connect to see a trust dialog displaying the host/port and SHA256 server fingerprint; no fingerprint typing is required. Password authentication does not require a private key or key passphrase. The directory is created if permissions allow. Use a dedicated directory with write/list/read/delete permissions. All network operations use SSH; there is no shell-command interpolation.
 
-Obtain the fingerprint from the server administrator through a trusted channel. For an administrator with console access, `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256` can show the server key fingerprint. Several host-key algorithms may exist; pin the key actually offered to the client. Unknown or changed keys are rejected. Connection errors can display the offered fingerprint, but that display alone does not verify its authenticity.
+Compare the displayed fingerprint with the server administrator's value through a trusted channel, then choose **Trust and connect** or cancel. For an administrator with console access, `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256` can show the server key fingerprint. Several host-key algorithms may exist; pin the key actually offered to the client. A displayed fingerprint alone does not establish authenticity.
+
+Unknown keys are rejected before authentication until explicitly approved; the app reconnects with the approved key pinned and saves it when the backup destination is activated. Existing saved trust is reused only for the same host and port. A different key is rejected, including by background jobs. Reconnect in Settings to review the old/new fingerprints and explicitly choose **Trust new key** only after verifying the change. Cancellation leaves the existing provider unchanged; a server that changes keys between the prompt and reconnection is rejected again.
 
 ## Recovery / account changes
 
