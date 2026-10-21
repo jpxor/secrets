@@ -146,3 +146,8 @@ External OAuth registrations, remote test accounts and an attached Android phone
 - OSV querybatch returned no affected results for 72 resolved Maven and direct crypto/Dart package-version queries on 2026-10-20. Not a complete vulnerability assessment; bundled engine code, proprietary Google services and every Dart transitive dependency are not covered by this result.
 - Local server returned and browser rendered homepage, privacy and support; internal navigation and static local link checks pass. Desktop appearance inspected. Browser viewport override did not take effect (reported desktop dimensions), so phone-width browser verification remains unclaimed; CSS includes a mobile breakpoint and wrapping for long policy URLs.
 - Required formatting, analysis, Flutter/native tests, lint, tooling checks and signed Android build passed as recorded in the preceding entry. No Android device connected (adb devices empty), so this build was not installed and physical recovery/provider checks remain open. Source-publication approval, live CI, Pages deployment/domain verification, Google review/production publishing and non-test-account recovery remain next steps.
+
+## First public CI regression — 2026-10-20
+
+- Published reviewed source to jpxor/secrets using the existing SSH identity. First Linux CI failed before Flutter setup: setup-android's default package list requested the retired Android SDK `tools` package. Windows signing/property checks passed.
+- Replaced the default list with explicit platform-tools, Android API 36 and build-tools 36.0.0. The clean GitHub Linux workflow is the regression check for this provider/toolchain failure; rerun results will be recorded separately.
