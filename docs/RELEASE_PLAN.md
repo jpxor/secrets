@@ -1,6 +1,6 @@
 # Fast public open-source release plan
 
-Updated 2026-10-20. Target the smallest honest public beta, then a stable release after recovery and operational evidence. Execute the two release tracks in parallel and defer new features. Provider review is an external dependency, so the gates below determine readiness rather than a promised date.
+Updated 2026-10-21. The maintainer has accepted all app features, including manual, Google Drive and SFTP backup/restore, and authorized publishing the first public beta (0.1.0-beta.1+2). Broader device coverage and independent review remain future work; the detailed matrix below distinguishes those conditions from the completed owner-device acceptance.
 
 ## Release scope and current evidence
 
@@ -9,6 +9,7 @@ Updated 2026-10-20. Target the smallest honest public beta, then a stable releas
 - Exactly one optional backup destination: Google Drive or SFTP. Local-only is supported. OneDrive, Dropbox and Git are removed from the app, native transports and their unused dependencies. Prior implementations remain in Git history.
 - Keep the existing package, signing identity and portable vault format. Existing Google backups must restore in the release. Never reset the user's phone to test recovery.
 - The maintainer confirmed successful end-to-end manual and Google Drive backup/restore on 2026-10-20; that acceptance task is complete. Full automated checks are available. Separate fresh-device/non-test-account conditions, sustained background/reboot behavior and the broader physical-device matrix were not specified in that report and remain unclaimed.
+- On 2026-10-21 the maintainer also confirmed SFTP backup/restore and all-feature acceptance after the signed-release SSH packaging fix. See PROGRESS.md for device/build evidence; no independent audit or additional device is inferred.
 - OneDrive/Dropbox registrations, Git, WebDAV, S3, iOS, desktop, sync, autofill and a Play Store launch are outside the first release.
 
 ## Execution order
