@@ -1,0 +1,15 @@
+allprojects {
+    afterEvaluate { project ->
+        if (project.path == ':app') {
+            tasks.register('releaseLicenseInventory') {
+                doLast {
+                    def artifacts = configurations.releaseRuntimeClasspath.resolvedConfiguration.resolvedArtifacts
+                    def rows = artifacts.collect { a -> [component: a.moduleVersion.id.toString(), file: a.file.absolutePath] }.sort { it.component }
+                    def output = new File(rootProject.projectDir.parentFile, 'build/release-license-inventory.json')
+                    output.parentFile.mkdirs()
+                    output.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(rows))
+                }
+            }
+        }
+    }
+}

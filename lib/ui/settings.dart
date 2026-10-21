@@ -196,14 +196,6 @@ class _SettingsPageState extends State<SettingsPage> {
           title: Text('Secrets · 0.1.0'),
           subtitle: Text('Open source · Apache-2.0'),
         ),
-        TextButton(
-          onPressed: () => showLicensePage(
-            context: context,
-            applicationName: 'Secrets',
-            applicationVersion: '0.1.0',
-          ),
-          child: const Text('Open-source licenses'),
-        ),
       ],
     ),
   );
