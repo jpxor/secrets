@@ -65,16 +65,10 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation("androidx.work:work-runtime-ktx:2.10.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("net.openid:appauth:0.11.1")
     implementation("com.google.android.gms:play-services-auth:22.0.0")
-    implementation("org.eclipse.jgit:org.eclipse.jgit:6.10.1.202505221210-r")
-    implementation("org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.10.1.202505221210-r") {
-        exclude(group = "com.jcraft", module = "jsch")
-    }
     implementation("com.github.mwiede:jsch:0.2.26")
-    // Supplies modern SSH algorithms on Android versions without Java 15 crypto providers.
+    // Supplies modern SFTP algorithms on Android versions without Java 15 crypto providers.
     implementation("org.bouncycastle:bcprov-jdk18on:1.86")
-    implementation("org.slf4j:slf4j-nop:1.7.36")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")

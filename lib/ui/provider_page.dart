@@ -34,10 +34,7 @@ class _ProviderPageState extends State<ProviderPage> {
     });
     try {
       final config = <String, String>{'type': provider};
-      if (provider == 'OneDrive' || provider == 'Dropbox') {
-        config['clientId'] = value('clientId').trim();
-      }
-      if (provider == 'SFTP' || provider == 'Git') {
+      if (provider == 'SFTP') {
         for (final key in [
           'username',
           'password',
@@ -48,26 +45,15 @@ class _ProviderPageState extends State<ProviderPage> {
           config[key] = value(key);
         }
         config['directory'] = value('directory', 'Secrets').trim();
-        if (provider == 'SFTP') {
-          config['host'] = value('host').trim();
-          config['port'] = value('port', '22').trim();
-          final port = int.tryParse(config['port']!);
-          if (config['host']!.isEmpty ||
-              config['username']!.isEmpty ||
-              port == null ||
-              port < 1 ||
-              port > 65535) {
-            throw const VaultException(
-              'Enter a host, username and valid port.',
-            );
-          }
-        } else {
-          config['url'] = value('url').trim();
-          config['branch'] = value('branch', 'main').trim();
-          if (!config['url']!.startsWith('https://') &&
-              !config['url']!.startsWith('ssh://')) {
-            throw const VaultException('Use an https:// or ssh:// Git URL.');
-          }
+        config['host'] = value('host').trim();
+        config['port'] = value('port', '22').trim();
+        final port = int.tryParse(config['port']!);
+        if (config['host']!.isEmpty ||
+            config['username']!.isEmpty ||
+            port == null ||
+            port < 1 ||
+            port > 65535) {
+          throw const VaultException('Enter a host, username and valid port.');
         }
       }
       final result = await widget.bridge.connect(config);
@@ -106,10 +92,7 @@ class _ProviderPageState extends State<ProviderPage> {
           decoration: const InputDecoration(labelText: 'Backup provider'),
           items: [
             'Google Drive',
-            'OneDrive',
-            'Dropbox',
             'SFTP',
-            'Git',
           ].map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
           onChanged: busy
               ? null
@@ -129,48 +112,16 @@ class _ProviderPageState extends State<ProviderPage> {
         const SizedBox(height: 20),
         if (provider == 'Google Drive')
           const Text(
-            'Sign in with Google and allow access to the app’s backup folder. This APK must be registered with Google before sign-in can work.',
+            'Sign in with Google and allow access to Secrets’ encrypted backup folder.',
           ),
-        if (provider == 'OneDrive' || provider == 'Dropbox') ...[
-          field(
-            'clientId',
-            provider == 'OneDrive'
-                ? 'Microsoft public application ID'
-                : 'Dropbox app key',
-            initial: provider == 'OneDrive'
-                ? const String.fromEnvironment('SECRETS_MICROSOFT_CLIENT_ID')
-                : const String.fromEnvironment('SECRETS_DROPBOX_APP_KEY'),
-          ),
-          const Text(
-            'A distributor can preconfigure this public ID. Self-builders can enter their own app registration; no client secret is needed.',
-          ),
-        ],
         if (provider == 'SFTP') ...[
           field('host', 'Server host'),
           field('port', 'Port', initial: '22'),
           field('directory', 'Backup directory', initial: 'Secrets'),
         ],
-        if (provider == 'Git') ...[
-          field('url', 'Repository URL (HTTPS or SSH)'),
-          field('branch', 'Branch', initial: 'main'),
-          field(
-            'directory',
-            'Backup directory within repository',
-            initial: 'Secrets',
-          ),
-          const Text(
-            'Use a dedicated repository. An existing branch or an empty repository is supported. Git history retains previous encrypted copies.',
-          ),
-        ],
-        if (provider == 'SFTP' || provider == 'Git') ...[
+        if (provider == 'SFTP') ...[
           field('username', 'Username'),
-          field(
-            'password',
-            provider == 'Git'
-                ? 'Password / access token (optional)'
-                : 'Password (optional)',
-            secret: true,
-          ),
+          field('password', 'Password (optional)', secret: true),
           field(
             'privateKey',
             'SSH private key (optional)',

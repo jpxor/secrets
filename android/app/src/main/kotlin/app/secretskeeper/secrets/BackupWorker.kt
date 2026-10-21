@@ -13,7 +13,7 @@ class BackupWorker(context: Context, parameters: WorkerParameters) : Worker(cont
             val config = store.config() ?: return@withLock Result.success()
             val snapshot = store.snapshot() ?: return@withLock Result.success()
             if (!(store.status()["pending"] as Boolean)) return@withLock Result.success()
-            Providers.open(applicationContext, config, store::setConfig).use { provider ->
+            Providers.open(applicationContext, config).use { provider ->
                 BackupEngine.upload(provider, snapshot, store.remoteName()) { store.acknowledged(snapshot) }
             }
             Result.success()

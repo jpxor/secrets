@@ -17,7 +17,6 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import net.openid.appauth.*
 import org.json.JSONObject
 import java.security.KeyStore
 import java.util.concurrent.Executors
@@ -32,13 +31,11 @@ class MainActivity : FlutterFragmentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private val store by lazy { LocalStore(applicationContext) }
     private lateinit var channel: MethodChannel
-    private lateinit var oauth: AuthorizationService
     private var pending: MethodChannel.Result? = null
     private var candidate: JSONObject? = null
     private var candidateRemote: String? = null
     private var candidateVaultId: String? = null
     private var authCandidate: JSONObject? = null
-    private var authProvider: String? = null
     private var clipboardGeneration = 0L
     private var observedClipboardChange = false
     private var clipboardListener: ClipboardManager.OnPrimaryClipChangedListener? = null
@@ -51,7 +48,6 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
-        oauth = AuthorizationService(this)
         ContextCompat.registerReceiver(this, receiver, IntentFilter(Intent.ACTION_SCREEN_OFF), ContextCompat.RECEIVER_NOT_EXPORTED)
         BackupWorker.schedule(applicationContext)
     }
@@ -109,9 +105,9 @@ class MainActivity : FlutterFragmentActivity() {
                     candidate = null; candidateRemote = null; candidateVaultId = null
                     @Suppress("UNCHECKED_CAST")
                     val config = JSONObject(call.arguments as Map<String, Any>)
+                    Providers.requireSupported(config.getString("type"))
                     when (config.getString("type")) {
                         "Google Drive" -> authorizeGoogle(config, result)
-                        "OneDrive", "Dropbox" -> authorizeOAuth(config, result)
                         else -> inspect(config, result)
                     }
                 }
@@ -119,7 +115,7 @@ class MainActivity : FlutterFragmentActivity() {
                     BackupWorker.providerLock.withLock {
                         val config = candidate ?: fail("Connect a destination first.")
                         val local = store.snapshot() ?: fail("Create or restore a vault before enabling backup.")
-                        Providers.open(applicationContext, config) { updated -> candidate = updated }.use { provider ->
+                        Providers.open(applicationContext, config).use { provider ->
                             val newest = provider.list().firstOrNull()
                             ensure(newest?.name == candidateRemote) { "Destination changed during setup. Connect again." }
                             if (newest != null) ensure(candidateVaultId == local.id) {
@@ -135,7 +131,7 @@ class MainActivity : FlutterFragmentActivity() {
                 "downloadBackup" -> background(result) {
                     BackupWorker.providerLock.withLock {
                         val config = store.config() ?: fail("No backup provider configured.")
-                        Providers.open(applicationContext, config, store::setConfig).use { provider ->
+                        Providers.open(applicationContext, config).use { provider ->
                             provider.list().firstOrNull()?.let { provider.read(it) } ?: fail("No backup found.")
                         }
                     }
@@ -144,7 +140,7 @@ class MainActivity : FlutterFragmentActivity() {
                     BackupWorker.providerLock.withLock {
                         val config = candidate ?: fail("Connect a destination first.")
                         val name = call.argument<String>("name")!!
-                        Providers.open(applicationContext, config) { updated -> candidate = updated }.use { provider ->
+                        Providers.open(applicationContext, config).use { provider ->
                             val file = provider.list().firstOrNull { it.name == name } ?: fail("Backup no longer exists. Connect again.")
                             val text = provider.read(file)
                             candidateVaultId = JSONObject(text).getJSONObject("header").getString("id")
@@ -155,14 +151,14 @@ class MainActivity : FlutterFragmentActivity() {
                 else -> result.notImplemented()
             }
         } catch (e: Exception) {
-            if (pending === result) { pending = null; authCandidate = null; authProvider = null }
+            if (pending === result) { pending = null; authCandidate = null }
             result.error("secrets", BackupWorker.safeError(e), null)
         }
     }
 
     private fun inspect(config: JSONObject, result: MethodChannel.Result) = background(result) {
         BackupWorker.providerLock.withLock {
-            Providers.open(applicationContext, config) { updated -> config.put("refreshToken", updated.getString("refreshToken")) }.use { provider ->
+            Providers.open(applicationContext, config).use { provider ->
                 val files = provider.list()
                 val latest = files.firstOrNull()
                 val envelope = latest?.let { provider.read(it) }
@@ -176,7 +172,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun authorizeGoogle(config: JSONObject, result: MethodChannel.Result) {
-        pending = result; authCandidate = config; authProvider = "Google Drive"
+        pending = result; authCandidate = config
         val request = AuthorizationRequest.builder().setRequestedScopes(listOf(Scope(Providers.DRIVE_SCOPE))).build()
         Identity.getAuthorizationClient(this).authorize(request).addOnSuccessListener { response ->
             if (response.hasResolution()) {
@@ -190,28 +186,12 @@ class MainActivity : FlutterFragmentActivity() {
         val config = authCandidate ?: return
         @Suppress("DEPRECATION")
         response.toGoogleSignInAccount()?.account?.name?.let { config.put("account", it) }
-        pending = null; authCandidate = null; authProvider = null
+        pending = null; authCandidate = null
         inspect(config, result)
-    }
-    private fun authorizeOAuth(config: JSONObject, result: MethodChannel.Result) {
-        val type = config.getString("type")
-        val client = config.optString("clientId").trim()
-        ensure(client.isNotEmpty()) { "A public OAuth client ID is required. See docs/PROVIDERS.md or enter your own app registration ID." }
-        val service = if (type == "OneDrive") AuthorizationServiceConfiguration(
-            android.net.Uri.parse("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize"),
-            android.net.Uri.parse("https://login.microsoftonline.com/consumers/oauth2/v2.0/token"))
-        else AuthorizationServiceConfiguration(android.net.Uri.parse("https://www.dropbox.com/oauth2/authorize"), android.net.Uri.parse("https://api.dropboxapi.com/oauth2/token"))
-        val builder = net.openid.appauth.AuthorizationRequest.Builder(service, client, ResponseTypeValues.CODE,
-            android.net.Uri.parse("app.secretskeeper.secrets:/oauth2redirect"))
-            .setScope(if (type == "OneDrive") "Files.ReadWrite.AppFolder offline_access" else "files.metadata.read files.content.read files.content.write")
-        if (type == "Dropbox") builder.setAdditionalParameters(mapOf("token_access_type" to "offline"))
-        // AppAuth automatically generates PKCE verifier/challenge and validates OAuth state.
-        pending = result; authCandidate = config; authProvider = type
-        startActivityForResult(oauth.getAuthorizationRequestIntent(builder.build()), OAUTH)
     }
     private fun finishAuthError(message: String) {
         val result = pending
-        pending = null; authCandidate = null; authProvider = null
+        pending = null; authCandidate = null
         result?.error("authorization", message, null)
     }
 
@@ -316,27 +296,13 @@ class MainActivity : FlutterFragmentActivity() {
                 try { finishGoogle(Identity.getAuthorizationClient(this).getAuthorizationResultFromIntent(data)) }
                 catch (e: Exception) { finishAuthError(GoogleDriveErrors.authorization((e as? com.google.android.gms.common.api.ApiException)?.statusCode)) }
             }
-            OAUTH -> {
-                val response = data?.let { AuthorizationResponse.fromIntent(it) }
-                if (response == null) { finishAuthError("Authorization canceled or failed."); return }
-                oauth.performTokenRequest(response.createTokenExchangeRequest()) { token, error ->
-                    if (error != null || token?.refreshToken == null) { finishAuthError("Provider did not grant background access. Check the app registration and reconnect.") }
-                    else {
-                        val config = authCandidate ?: return@performTokenRequest
-                        config.put("refreshToken", token.refreshToken)
-                        pending = null; authCandidate = null; authProvider = null
-                        inspect(config, result)
-                    }
-                }
-            }
         }
     }
     override fun onDestroy() {
         unregisterReceiver(receiver)
-        if (::oauth.isInitialized) oauth.dispose()
         clipboardListener?.let { (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).removePrimaryClipChangedListener(it) }
         io.shutdown()
         super.onDestroy()
     }
-    companion object { const val IMPORT = 301; const val EXPORT = 302; const val OAUTH = 303; const val GOOGLE = 304 }
+    companion object { const val IMPORT = 301; const val EXPORT = 302; const val GOOGLE = 304 }
 }

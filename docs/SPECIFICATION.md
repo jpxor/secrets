@@ -10,7 +10,7 @@ Encrypt all persistent vault content, including service and username. Master pas
 
 ## Backup and recovery
 
-Local-only setup is supported; backup can be added later. Exactly one active provider: Google Drive, OneDrive, Dropbox, SFTP, or standard Git over HTTPS/SSH. Every committed local change immediately queues an encrypted backup. Upload promptly online; durable retries offline or after failures, with Android scheduling limits. Show backed-up/pending/needs-attention and last successful backup time. Serialize uploads; never let old snapshots overwrite new ones. Interrupted writes retain the last valid remote backup. Keep a small bounded history of encrypted snapshots; Git/provider history may retain additional older copies.
+Local-only setup is supported; backup can be added later. Exactly one active provider: Google Drive or SFTP. Every committed local change immediately queues an encrypted backup. Upload promptly online; durable retries offline or after failures, with Android scheduling limits. Show backed-up/pending/needs-attention and last successful backup time. Serialize uploads; never let old snapshots overwrite new ones. Interrupted writes retain the last valid remote backup. Keep a small bounded history of encrypted snapshots; provider/server history may retain additional older copies.
 
 Provider credentials remain separate from portable vault exports. New phone restoration requires provider access and the master passphrase, not the old phone or biometric key. Fresh setup offers restore before creation. Never silently replace remote data. SSH/SFTP host keys must be pinned and changes explicitly approved.
 
@@ -20,7 +20,11 @@ Manual encrypted export/import is always available independently of the provider
 
 - 30 seconds in background before locking; phone lock is immediate.
 - 30 seconds before clipboard clearing, without clearing newer content.
-- Retain 5 encrypted backup generations where the provider supports pruning; do not rewrite Git history.
+- Retain 5 encrypted backup generations where the provider supports pruning; server-side history may retain additional copies.
 - Search only service, case-insensitively.
 - Master passphrase is required, biometrics optional.
 - New passphrases require at least 8 characters, with no maximum length. Recommend a longer passphrase made from several random words.
+
+## Deferred providers
+
+OneDrive, Dropbox and Git are removed from the initial release. WebDAV over HTTPS is the recommended next self-hosted option, after core release verification. See RELEASE_PLAN.md; no additional provider is promised for v1.

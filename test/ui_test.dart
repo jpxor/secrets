@@ -74,6 +74,14 @@ void main() {
           ),
         ),
       );
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      expect(find.text('SFTP'), findsOneWidget);
+      for (final removed in ['OneDrive', 'Dropbox', 'Git']) {
+        expect(find.text(removed), findsNothing);
+      }
+      await tester.tap(find.text('Google Drive').last);
+      await tester.pumpAndSettle();
       Future<void> choose(String name) async {
         tester
             .state<ScrollableState>(find.byType(Scrollable).first)
@@ -95,12 +103,13 @@ void main() {
       );
       await tester.ensureVisible(password);
       await tester.enterText(password, 'test-server-password');
-      await choose('Git');
+      await choose('Google Drive');
+      await choose('SFTP');
       final token = tester.widget<TextField>(
         find.byWidgetPredicate(
           (w) =>
               w is TextField &&
-              w.decoration?.labelText == 'Password / access token (optional)',
+              w.decoration?.labelText == 'Password (optional)',
         ),
       );
       expect(token.controller!.text, isEmpty);

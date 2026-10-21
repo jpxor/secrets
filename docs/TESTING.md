@@ -11,9 +11,9 @@ Tests cover:
 - Password character policies and token byte counts.
 - Service-only search and fresh-install restore choices.
 - Interrupted uploads, preservation of prior snapshots, idempotent retry after process death, stale/foreign-vault rejection.
-- Real loopback SFTP upload/read/delete with server-key pinning, and generic Git SSH push/clone/restore with Windows cache-cleanup regression coverage.
-- Git clone metadata excludes credentials; HTTPS rejects untrusted certificates before sending credentials.
-- Background lifecycle events cannot extend the original lock deadline; provider changes cannot carry another provider's credentials.
+- Real loopback SFTP upload/read/delete with server-key pinning.
+- Release provider selection exposes only Google Drive/SFTP; native setup rejects removed providers and provider switching clears credentials.
+- Background lifecycle events cannot extend the original lock deadline; switching away from and back to SFTP clears credentials.
 - Windows signing password DPAPI round-trip, including newline handling (PowerShell check).
 - Windows SDK-property escaping and idempotence (PowerShell check).
 
@@ -34,6 +34,6 @@ The signed release uses a different signing identity from debug builds. If Andro
 
 ## Each remote provider
 
-Use disposable test accounts/directories/repositories; never real secrets during initial validation. Test connect to empty destination, edit/upload, offline edits, app restart, reconnect, expired authorization, full storage, interrupted upload, retention and fresh-install recovery. Inspect remote bytes for plaintext. For SSH, reject unknown/wrong host keys. For Git, reject conflicting pushes; test empty and pre-existing branches and HTTPS/SSH authentication.
+Use disposable test accounts/directories; never real secrets during initial validation. Test connect to empty destination, edit/upload, offline edits, app restart, reconnect, expired authorization, full storage, interrupted upload, retention and fresh-install recovery. Inspect remote bytes for plaintext. For SSH, reject unknown/wrong host keys.
 
 Cloud registrations, account credentials and a physical Android device are external dependencies. Passing unit/widget tests is not evidence these end-to-end checks passed. Update PROGRESS.md with actual results before labeling an APK ready for production secrets.
