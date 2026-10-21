@@ -8,7 +8,7 @@ Updated 2026-10-20. Target the smallest honest public beta, then a stable releas
 - Offline vault, biometric/passphrase unlock, record editing/search/generation, encrypted manual export/import.
 - Exactly one optional backup destination: Google Drive or SFTP. Local-only is supported. OneDrive, Dropbox and Git are removed from the app, native transports and their unused dependencies. Prior implementations remain in Git history.
 - Keep the existing package, signing identity and portable vault format. Existing Google backups must restore in the release. Never reset the user's phone to test recovery.
-- Google app registration and the owner's live phone authorization/upload succeeded. Full automated checks are available. Fresh-install cloud restore, sustained background/reboot behavior and the broader physical-device matrix are not yet proven.
+- The maintainer confirmed successful end-to-end manual and Google Drive backup/restore on 2026-10-20; that acceptance task is complete. Full automated checks are available. Separate fresh-device/non-test-account conditions, sustained background/reboot behavior and the broader physical-device matrix were not specified in that report and remain unclaimed.
 - OneDrive/Dropbox registrations, Git, WebDAV, S3, iOS, desktop, sync, autofill and a Play Store launch are outside the first release.
 
 ## Execution order
@@ -18,7 +18,8 @@ Updated 2026-10-20. Target the smallest honest public beta, then a stable releas
 | P0, complete | Freeze the reduced provider scope; remove unused code/dependencies, update docs and reject legacy provider configurations clearly | Development | Commit `39b3382`; 12 Flutter + 7 native tests, full checks and signed APK pass; phone disconnected, so this build still needs device retest |
 | P0, complete | Choose GitHub repository/owner and GitHub Pages address; confirm public support/security-reporting contacts | Maintainer | jpxor/secrets; https://www.wallust.com/secrets/; Issues and GitHub private vulnerability reporting |
 | P0, complete | Prepare and publish homepage, privacy policy, support/recovery guide and release limitations | Development + maintainer | Live Pages site verified over HTTPS; see PUBLIC_RELEASE_SETUP.md |
-| P0 | Prove portable recovery and safe failure on a spare device or isolated test installation | Maintainer-assisted device testing | Saved test report described below; no access to real user passphrases |
+| P0, complete | Validate manual and Google Drive backup/restore | Maintainer-assisted device testing | Maintainer confirmed both backup/restore round trips successful on 2026-10-20; see PROGRESS.md |
+| P0 | Complete recovery failure cases and remaining device acceptance conditions | Maintainer-assisted device testing | Safe-failure, fresh-device independence, SFTP and broader device checks below; successful round trips alone do not establish these conditions |
 | P0 | Review security-sensitive paths and release dependencies; fix discovered data-loss/authentication bugs | Development + another reviewer where available | Findings closed or explicitly assessed; no known data-loss/authentication-bypass issue |
 | P0, configuration complete; live validation open | Finish Google production branding/audience setup against the final Pages URLs | Maintainer-assisted account setup | External/In production, branding verified/published; non-test-account authorization/upload/restore remains unverified |
 | P0 | Secure and prove the release signing/upgrade process | Maintainer + development | Recoverable key/password backup and successful data-preserving upgrade |
@@ -39,7 +40,7 @@ Use disposable records and a test passphrase entered by the tester on-device. Re
 6. Revoke Google authorization, simulate full storage/rate limiting and interrupted upload, then reconnect/retry. Show correct status and retain the prior valid backup. For SFTP reject changed/unknown server keys and verify unavailable-server recovery.
 7. Install a newer APK with the same signing identity over an existing synthetic vault. Verify records, passphrase, biometric binding, provider configuration and pending work survive. Test at least the owner's device and an additional Android/API configuration; record untested Android versions plainly.
 
-These are release tests, not a request to clear the owner's current app data. A full Google Drive restoration on a fresh installation is the highest-priority remaining check.
+These are release tests, not a request to clear the owner's current app data. Manual and Google Drive backup/restore round trips are complete by maintainer confirmation. The report did not specify a fresh installation, independent device, non-test-listed account, APK hash or device details; do not infer those conditions or completion of the failure-case matrix.
 
 ## Public repository and release operations
 

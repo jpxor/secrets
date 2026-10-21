@@ -1,5 +1,11 @@
 # Implementation progress
 
+## Manual and Google Drive backup/restore acceptance — 2026-10-20
+
+- The maintainer reports completing both the manual backup/restore process and the Google Drive backup/restore process successfully, and explicitly requests marking that task complete. Both round-trip acceptance items are now complete in RELEASE_PLAN.md.
+- Evidence is the maintainer's on-device report, not an agent-observed test. No vault contents, passphrase or provider credentials were requested or accessed. APK hash/version, device details, fresh-install/device independence and non-test-account status were not supplied, so these conditions are not inferred.
+- This closes the reported manual/Drive round-trip task; safe-failure scenarios, SFTP, background/reboot, signing-key recovery and the broader release/device gates retain their existing status. No application code or production configuration changed.
+
 Current status: Android application implemented, signed APK built and verified. Final combined checks pass. See the final handoff section for remaining external validation.
 
 ## Initial state
