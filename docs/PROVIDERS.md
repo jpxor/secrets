@@ -30,9 +30,32 @@ Google Play services must be available. Revoked consent/account changes require 
 
 ## SFTP
 
-Supply host, port (22 default), username, password or private key, optional key passphrase, directory and SHA256 server host-key fingerprint. The directory is created if permissions allow. Use a dedicated directory with write/list/read/delete permissions. All network operations use SSH; there is no shell-command interpolation.
+Supply host, port (22 default), username, password or private key, optional key passphrase and directory. Connect to see a trust dialog displaying the host/port and SHA256 server fingerprint; no fingerprint typing is required. Password authentication does not require a private key or key passphrase. The directory is created if permissions allow. Use a dedicated directory with write/list/read/delete permissions. All network operations use SSH; there is no shell-command interpolation.
 
-Obtain the fingerprint from the server administrator through a trusted channel. For an administrator with console access, `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256` can show the server key fingerprint. Several host-key algorithms may exist; pin the key actually offered to the client. Unknown or changed keys are rejected. Connection errors can display the offered fingerprint, but that display alone does not verify its authenticity.
+Compare the displayed fingerprint with the server administrator's value through a trusted channel, then choose **Trust and connect** or cancel. For an administrator with console access, `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256` can show the server key fingerprint. Several host-key algorithms may exist; pin the key actually offered to the client. A displayed fingerprint alone does not establish authenticity.
+
+Unknown keys are rejected before authentication until explicitly approved; the app reconnects with the approved key pinned and saves it when the backup destination is activated. Existing saved trust is reused only for the same host and port. A different key is rejected, including by background jobs. Reconnect in Settings to review the old/new fingerprints and explicitly choose **Trust new key** only after verifying the change. Cancellation leaves the existing provider unchanged; a server that changes keys between the prompt and reconnection is rejected again.
+
+SFTP password, private-key and key-passphrase fields have show/hide controls. Failures display selectable guidance and a fixed `[SFTP STAGE/REASON]` diagnostic. Android logs under `SecretsSftp` contain only that fixed code, including for background failures; raw SSH messages, credentials, endpoints and directory paths are never logged. Connecting tests the actual SSH service; ICMP ping is not required.
+
+### Troubleshoot your server
+
+The error identifies where the operation stopped and what to check yourself. Consult the server's SSH/SFTP log at the time of the attempt. On an OpenSSH server this is usually the system journal for `ssh`/`sshd` or its authentication log; location depends on the operating system. Keep those raw logs private because they may contain account names and addresses.
+
+| Diagnostic reason | What to check |
+| --- | --- |
+| `DNS`, `TIMEOUT`, `NO_ROUTE`, `CONNECTION_REFUSED` | Host and SSH port, running SSH service, DNS, listening interface, firewall and VPN. A private LAN address needs a local network or VPN route. |
+| `NOT_SSH` | Use the SSH/SFTP service port, not FTP, FTPS or HTTP. |
+| `*_ALGORITHMS`, `ALGORITHM_NEGOTIATION` | Update app/server and inspect `KexAlgorithms`, `HostKeyAlgorithms`, `Ciphers`, `MACs`. Keep modern algorithms and host verification enabled. |
+| `AUTHENTICATION_REJECTED` | Username, password or key/passphrase, allowed authentication methods, account restrictions and server authentication log. |
+| `SFTP_UNAVAILABLE` | Enable the SFTP subsystem, check account-specific `Match`/`ForceCommand` rules. SSH shell access alone does not prove SFTP is allowed. |
+| `PATH_NOT_FOUND` | Path within the account's SFTP/chroot root, which can differ from the filesystem root. |
+| `PERMISSION_DENIED` | Directory ownership, ACLs and list/read/create/rename/delete rights. |
+| `SERVER_FILE_FAILURE`, `SFTP_PROTOCOL` | Disk space, account quota, read-only mounts and SFTP server log. |
+| `CLIENT_CRYPTO_ERROR`, `CRYPTO_UNAVAILABLE` | Update Secrets. This identifies an app/runtime problem, not a bad password or directory permission. |
+| `SERVER_SIGNATURE_INVALID` | Stop and inspect server host-key configuration and logs. Do not bypass verification. |
+
+An unknown `KEY_EXCHANGE` failure occurs before login: changing the password cannot fix it. Check the server's SSH log and update app/server. The stage also distinguishes directory setup, listing, downloading, uploading and deleting, so a file-operation failure is not mistaken for a login failure.
 
 ## Recovery / account changes
 

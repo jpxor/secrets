@@ -2,7 +2,7 @@
 
 An offline-first, open-source Android secrets keeper. Flutter/Dart UI and portable vault logic leave room for future iOS contributions. No application server is required.
 
-Android implementation with automated vault/recovery, UI, backup-policy and local SFTP transport tests. Google Drive sign-in and backup have been verified on the owner's phone; fresh-install recovery and broader physical-device verification are still required before production use. See [requirements](docs/SPECIFICATION.md), [development](docs/DEVELOPMENT.md), [provider setup](docs/PROVIDERS.md), [verification checklist](docs/TESTING.md), and [security design](docs/SECURITY.md).
+Android implementation with automated vault/recovery, UI, backup-policy and SFTP transport tests. The maintainer has verified the app's features, including manual, Google Drive and SFTP backup/restore, on a Samsung SM-A546W running Android 16/API 36. The first public release is a beta; broader device coverage and an independent security audit remain open. See [releases](https://github.com/jpxor/secrets/releases), [requirements](docs/SPECIFICATION.md), [development](docs/DEVELOPMENT.md), [provider setup](docs/PROVIDERS.md), [verification checklist](docs/TESTING.md), and [security design](docs/SECURITY.md).
 
 ## Features
 

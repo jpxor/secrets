@@ -109,13 +109,19 @@ class GoogleDriveProvider(private val context: Context, private val config: JSON
     }
 }
 
-fun secureJsch(config: JSONObject): JSch = JSch().apply {
+fun secureJsch(config: JSONObject, onUntrusted: (SshHostKeyException) -> Unit = {}, onLog: (String) -> Unit = {}): JSch = JSch().apply {
+    setInstanceLogger(object : com.jcraft.jsch.Logger {
+        override fun isEnabled(level: Int) = true
+        override fun log(level: Int, message: String) { onLog(message) }
+    })
     val pin = config.optString("fingerprint").trim()
     setHostKeyRepository(object : HostKeyRepository {
         override fun check(host: String?, key: ByteArray): Int {
             val actual = "SHA256:" + java.util.Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(key))
-            ensure(pin.isNotEmpty() && MessageDigest.isEqual(actual.toByteArray(), pin.toByteArray())) {
-                "SSH host key not trusted or changed. Verify this fingerprint independently, then enter it explicitly: $actual"
+            if (pin.isEmpty() || !MessageDigest.isEqual(actual.toByteArray(), pin.toByteArray())) {
+                val challenge = SshHostKeyException(actual, pin)
+                onUntrusted(challenge)
+                throw challenge
             }
             return HostKeyRepository.OK
         }
@@ -132,16 +138,24 @@ fun secureJsch(config: JSONObject): JSch = JSch().apply {
 }
 
 class SftpProvider(config: JSONObject) : RemoteProvider {
-    private val session = secureJsch(config).getSession(config.getString("username"), config.getString("host"), config.optInt("port", 22))
+    private val trace = SftpTrace()
+    private var hostKeyChallenge: SshHostKeyException? = null
+    private val session = try {
+        secureJsch(config, onUntrusted = { hostKeyChallenge = it }, onLog = trace::event)
+            .getSession(config.getString("username"), config.getString("host"), config.optInt("port", 22))
+    } catch (e: Exception) { throw trace.failure(e) }
     private val sftp: ChannelSftp
     init {
         session.setConfig("StrictHostKeyChecking", "yes")
         session.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive")
         config.optString("password").takeIf { it.isNotEmpty() }?.let { session.setPassword(it) }
         session.timeout = 30000
-        session.connect(30000)
+        trace.stage = SftpStage.CONNECT
         try {
+            try { session.connect(30000) } catch (e: Exception) { throw (hostKeyChallenge ?: e) }
+            trace.stage = SftpStage.SFTP_CHANNEL
             sftp = (session.openChannel("sftp") as ChannelSftp).apply { connect(30000) }
+            trace.stage = SftpStage.DIRECTORY
             val directory = config.optString("directory", "Secrets").trim()
             ensure(directory.isNotEmpty() && directory.split('/').none { it == ".." }) { "Invalid backup directory." }
             if (directory.startsWith('/')) sftp.cd("/")
@@ -151,27 +165,38 @@ class SftpProvider(config: JSONObject) : RemoteProvider {
                     sftp.mkdir(part); sftp.cd(part)
                 }
             }
-        } catch (e: Exception) { session.disconnect(); throw e }
+        } catch (e: Exception) {
+            session.disconnect()
+            if (e is SshHostKeyException || e is SecretsException) throw e
+            throw trace.failure(e)
+        }
     }
-    override fun list(): List<RemoteFile> = Providers.sorted(sftp.ls(".").mapNotNull {
+    private fun <T> operation(stage: SftpStage, action: () -> T): T {
+        trace.stage = stage
+        return try { action() } catch (e: Exception) {
+            if (e is SecretsException) throw e
+            throw trace.failure(e)
+        }
+    }
+    override fun list(): List<RemoteFile> = operation(SftpStage.LIST) { Providers.sorted(sftp.ls(".").mapNotNull {
         val item = it as ChannelSftp.LsEntry
         if (!item.attrs.isDir) RemoteFile(item.filename, item.filename) else null
-    })
-    override fun read(file: RemoteFile): String {
+    }) }
+    override fun read(file: RemoteFile): String = operation(SftpStage.DOWNLOAD) {
         ensure(Providers.isSnapshot(file.locator) && sftp.stat(file.locator).size <= LocalStore.MAX_BYTES) { "Invalid or oversized remote backup." }
-        return sftp.get(file.locator).use { input ->
+        sftp.get(file.locator).use { input ->
             val out = java.io.ByteArrayOutputStream()
             val buffer = ByteArray(8192)
             while (true) { val n = input.read(buffer); if (n < 0) break; ensure(out.size() + n <= LocalStore.MAX_BYTES); out.write(buffer, 0, n) }
             out.toString("UTF-8")
         }
     }
-    override fun put(name: String, envelope: String) {
+    override fun put(name: String, envelope: String) = operation(SftpStage.UPLOAD) {
         ensure(Providers.isSnapshot(name))
         val temporary = ".upload-${UUID.randomUUID()}"
         try { sftp.put(ByteArrayInputStream(envelope.toByteArray()), temporary); sftp.rename(temporary, name) }
         finally { try { sftp.rm(temporary) } catch (_: SftpException) {} }
     }
-    override fun delete(file: RemoteFile) { ensure(Providers.isSnapshot(file.locator)); sftp.rm(file.locator) }
+    override fun delete(file: RemoteFile) = operation(SftpStage.DELETE) { ensure(Providers.isSnapshot(file.locator)); sftp.rm(file.locator) }
     override fun close() { sftp.disconnect(); session.disconnect() }
 }

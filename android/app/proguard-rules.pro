@@ -1,4 +1,7 @@
 # JSch resolves algorithms by configured class name, not direct references.
+# Its package-private key-exchange classes are instantiated by Session. Keeping
+# their names alone is insufficient if R8 moves Session to another package.
+-keeppackagenames com.jcraft.jsch,com.jcraft.jsch.**
 -keep class app.secretskeeper.secrets.BackupWorker { public <init>(android.content.Context, androidx.work.WorkerParameters); }
 # Room instantiates generated databases by reflection during WorkManager startup.
 -keep class * extends androidx.room.RoomDatabase { public <init>(); }

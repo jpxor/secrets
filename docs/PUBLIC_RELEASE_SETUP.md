@@ -71,6 +71,11 @@ or broaden scopes to work around authorization failures.
 
 ## Remaining release validation
 
+The maintainer confirmed successful manual and Google Drive backup/restore round
+trips on 2026-10-20. That acceptance task is complete. The report did not specify
+whether a fresh independent installation or an account outside the test-user list
+was used; those particular conditions remain unclaimed.
+
 Test with a Google account absent from the former test-user list: authorization,
 encrypted upload, fresh-install recovery, restart/background authorization and
 revocation/reauthorization. The tester enters credentials and a synthetic vault

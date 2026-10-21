@@ -11,6 +11,66 @@ import org.junit.Test
 import java.nio.file.Files
 
 class SftpProviderTest {
+    @Test fun hostTrustRequiresApprovalBeforeAuthenticationAndRejectsChangedKeys() {
+        val root = Files.createTempDirectory("secrets-sftp-trust-")
+        val keyGenerator = java.security.KeyPairGenerator.getInstance("EC").apply { initialize(256) }
+        val firstKey = keyGenerator.generateKeyPair()
+        val secondKey = keyGenerator.generateKeyPair()
+        var passwordAttempts = 0
+        var activeKey = firstKey
+        val server = SshServer.setUpDefaultServer().apply {
+            port = 0
+            host = "127.0.0.1"
+            keyPairProvider = org.apache.sshd.common.keyprovider.KeyPairProvider { _ -> listOf(activeKey) }
+            passwordAuthenticator = org.apache.sshd.server.auth.password.PasswordAuthenticator { user, password, _ ->
+                passwordAttempts++; user == "tester" && password == "test-password"
+            }
+            subsystemFactories = listOf(SftpSubsystemFactory.Builder().build())
+            fileSystemFactory = VirtualFileSystemFactory(root)
+        }
+        try {
+            server.start()
+            val config = JSONObject().put("type", "SFTP").put("host", "127.0.0.1").put("port", server.port)
+                .put("username", "tester").put("password", "test-password").put("directory", "backups")
+            fun challenge(): SshHostKeyException {
+                try { SftpProvider(config).use {}; fail("Untrusted key must reject the connection") }
+                catch (e: SshHostKeyException) { return e }
+                throw AssertionError("Missing host challenge")
+            }
+            val first = challenge()
+            assertEquals(KeyUtils.getFingerPrint(firstKey.public), first.fingerprint)
+            assertEquals("", first.previousFingerprint)
+            assertEquals(0, passwordAttempts)
+            assertFalse(Files.exists(root.resolve("backups")))
+            config.put("fingerprint", first.fingerprint)
+            SftpProvider(config).use { assertTrue(it.list().isEmpty()) }
+            assertEquals(1, passwordAttempts)
+            activeKey = secondKey
+            val changed = challenge()
+            assertEquals(first.fingerprint, changed.previousFingerprint)
+            assertEquals(KeyUtils.getFingerPrint(secondKey.public), changed.fingerprint)
+            assertEquals(1, passwordAttempts)
+            config.put("fingerprint", changed.fingerprint)
+            SftpProvider(config).use { assertTrue(it.list().isEmpty()) }
+            assertEquals(2, passwordAttempts)
+        } finally { server.stop(true); root.toFile().deleteRecursively() }
+    }
+
+    @Test fun savedTrustIsScopedToTheExactHostAndPort() {
+        val saved = JSONObject().put("type", "SFTP").put("host", "server.local").put("port", 2222).put("fingerprint", "saved-key")
+        fun request(host: String, port: Int) = JSONObject().put("type", "SFTP").put("host", host).put("port", port)
+        val same = request("SERVER.LOCAL", 2222)
+        SshHostTrust.reuseSavedPin(same, saved)
+        assertEquals("saved-key", same.getString("fingerprint"))
+        for (different in listOf(request("other.local", 2222), request("server.local", 22))) {
+            SshHostTrust.reuseSavedPin(different, saved)
+            assertFalse(different.has("fingerprint"))
+        }
+        val approved = request("server.local", 2222).put("fingerprint", "explicit-new-key")
+        SshHostTrust.reuseSavedPin(approved, saved)
+        assertEquals("explicit-new-key", approved.getString("fingerprint"))
+    }
+
     @Test fun pinnedSftpRoundTripAndChangedHostKeyRejection() {
         val root = Files.createTempDirectory("secrets-sftp-test-")
         val keys = SimpleGeneratorHostKeyProvider(root.resolve("hostkey")).apply { algorithm = "EC" }

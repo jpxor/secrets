@@ -18,6 +18,7 @@ class BackupWorker(context: Context, parameters: WorkerParameters) : Worker(cont
             }
             Result.success()
         } catch (e: Exception) {
+            if (e is SftpConnectionException) android.util.Log.w("SecretsSftp", "SFTP failure ${e.diagnostic}")
             // Provider errors are sanitized where possible; never persist HTTP bodies or credentials.
             store.error(safeError(e))
             Result.retry()
@@ -40,6 +41,8 @@ class BackupWorker(context: Context, parameters: WorkerParameters) : Worker(cont
         fun safeError(e: Exception): String {
             var cause: Throwable? = e
             repeat(8) {
+                if (cause is SftpConnectionException) return cause.message.orEmpty()
+                if (cause is SshHostKeyException) return "SSH host key is unknown or changed. Reconnect SFTP in Settings to review and explicitly approve the server key."
                 if (cause is SecretsException) return cause.message.orEmpty().take(300)
                 cause = cause?.cause
             }

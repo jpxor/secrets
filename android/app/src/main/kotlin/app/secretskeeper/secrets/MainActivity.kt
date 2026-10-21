@@ -63,7 +63,14 @@ class MainActivity : FlutterFragmentActivity() {
     private fun background(result: MethodChannel.Result, block: () -> Any?) {
         io.execute {
             try { val value = block(); handler.post { result.success(value) } }
-            catch (e: Exception) { handler.post { result.error("secrets", BackupWorker.safeError(e), null) } }
+            catch (e: SshHostKeyException) {
+                handler.post { result.error("ssh_host_key", "SSH host key needs explicit approval.",
+                    mapOf("fingerprint" to e.fingerprint, "previousFingerprint" to e.previousFingerprint)) }
+            }
+            catch (e: Exception) {
+                if (e is SftpConnectionException) android.util.Log.w("SecretsSftp", "SFTP failure ${e.diagnostic}")
+                handler.post { result.error("secrets", BackupWorker.safeError(e), null) }
+            }
             catch (_: LinkageError) { handler.post { result.error("platform", "This operation is incompatible with this Android runtime. Use encrypted export and report the device/Android version.", null) } }
         }
     }
@@ -158,6 +165,7 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun inspect(config: JSONObject, result: MethodChannel.Result) = background(result) {
         BackupWorker.providerLock.withLock {
+            SshHostTrust.reuseSavedPin(config, store.config())
             Providers.open(applicationContext, config).use { provider ->
                 val files = provider.list()
                 val latest = files.firstOrNull()
