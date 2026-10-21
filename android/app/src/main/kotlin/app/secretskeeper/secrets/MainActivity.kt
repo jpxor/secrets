@@ -67,7 +67,10 @@ class MainActivity : FlutterFragmentActivity() {
                 handler.post { result.error("ssh_host_key", "SSH host key needs explicit approval.",
                     mapOf("fingerprint" to e.fingerprint, "previousFingerprint" to e.previousFingerprint)) }
             }
-            catch (e: Exception) { handler.post { result.error("secrets", BackupWorker.safeError(e), null) } }
+            catch (e: Exception) {
+                if (e is SftpConnectionException) android.util.Log.w("SecretsSftp", "SFTP failure ${e.diagnostic}")
+                handler.post { result.error("secrets", BackupWorker.safeError(e), null) }
+            }
             catch (_: LinkageError) { handler.post { result.error("platform", "This operation is incompatible with this Android runtime. Use encrypted export and report the device/Android version.", null) } }
         }
     }

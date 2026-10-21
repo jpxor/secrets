@@ -80,6 +80,49 @@ Future<void> _openSftp(
 }
 
 void main() {
+  testWidgets(
+    'SFTP password can be shown and hidden without changing its value',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProviderPage(
+            bridge: _Bridge(),
+            restoring: false,
+            onConnected: (_) async => false,
+          ),
+        ),
+      );
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SFTP').last);
+      await tester.pumpAndSettle();
+      final password = find.byWidgetPredicate(
+        (w) =>
+            w is TextField && w.decoration?.labelText == 'Password (optional)',
+      );
+      await tester.ensureVisible(password);
+      await tester.enterText(password, 'synthetic-test-password');
+      expect(tester.widget<TextField>(password).obscureText, isTrue);
+      final show = find.byTooltip('Show password');
+      await tester.ensureVisible(show);
+      await tester.pumpAndSettle();
+      await tester.tap(show);
+      await tester.pumpAndSettle();
+      expect(tester.widget<TextField>(password).obscureText, isFalse);
+      expect(
+        tester.widget<TextField>(password).controller!.text,
+        'synthetic-test-password',
+      );
+      await tester.tap(find.byTooltip('Hide password'));
+      await tester.pumpAndSettle();
+      expect(tester.widget<TextField>(password).obscureText, isTrue);
+      expect(
+        tester.widget<TextField>(password).controller!.text,
+        'synthetic-test-password',
+      );
+    },
+  );
+
   testWidgets('SFTP cancellation never approves or activates the destination', (
     tester,
   ) async {

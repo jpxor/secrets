@@ -20,6 +20,8 @@ Background workers upload encrypted envelopes without unlocking the vault. Provi
 
 ## Review requirements
 
+SFTP connection diagnostics classify failures in memory into fixed stage/reason codes. Only those codes reach Android logs; displayed guidance is fixed text. Raw library messages and throwable causes are discarded at the connection boundary, so credentials, endpoints and paths cannot leak through diagnostic messages. Host-key challenges retain their separate explicit trust flow.
+
 SFTP setup uses explicit trust on first use: the SSH handshake rejects an unknown
 key before user authentication, returns only public fingerprint metadata to a
 confirmation dialog, then reconnects with the approved key pinned. Approval is

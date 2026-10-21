@@ -36,6 +36,8 @@ Compare the displayed fingerprint with the server administrator's value through 
 
 Unknown keys are rejected before authentication until explicitly approved; the app reconnects with the approved key pinned and saves it when the backup destination is activated. Existing saved trust is reused only for the same host and port. A different key is rejected, including by background jobs. Reconnect in Settings to review the old/new fingerprints and explicitly choose **Trust new key** only after verifying the change. Cancellation leaves the existing provider unchanged; a server that changes keys between the prompt and reconnection is rejected again.
 
+SFTP password, private-key and key-passphrase fields have show/hide controls. Connection failures display a fixed `[SFTP STAGE/REASON]` diagnostic and targeted guidance. Android logs under `SecretsSftp` contain only that fixed code, including for background connection failures; raw SSH messages, credentials, endpoints and directory paths are never logged. Share the code when reporting a failure. No separate ping or server-test button is needed: connecting tests the actual SSH service.
+
 ## Recovery / account changes
 
 On a fresh phone choose **Restore from backup provider**, authorize or enter connection details, then enter the master passphrase. The app authenticates and decrypts the backup before replacing local data. A new biometric binding can then be enabled. Provider credentials are not inside exported vault files, so SFTP connection details and keys must also be available separately.

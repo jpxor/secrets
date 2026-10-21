@@ -21,6 +21,8 @@ class _ProviderPageState extends State<ProviderPage> {
   String provider = 'Google Drive';
   bool busy = false;
   bool showPrivateKey = false;
+  bool showPassword = false;
+  bool showKeyPassphrase = false;
   String? error;
   final fields = <String, TextEditingController>{};
   TextEditingController controller(String key, [String value = '']) =>
@@ -177,6 +179,8 @@ class _ProviderPageState extends State<ProviderPage> {
                   provider = v!;
                   error = null;
                   showPrivateKey = false;
+                  showPassword = false;
+                  showKeyPassphrase = false;
                   final previous = fields.values.toList();
                   fields.clear();
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -248,22 +252,48 @@ class _ProviderPageState extends State<ProviderPage> {
     child: TextField(
       enableIMEPersonalizedLearning: false,
       controller: controller(key, initial),
-      obscureText: secret && (!multiline || !showPrivateKey),
+      obscureText:
+          secret &&
+          !(key == 'privateKey'
+              ? showPrivateKey
+              : key == 'password'
+              ? showPassword
+              : showKeyPassphrase),
       autocorrect: false,
       enableSuggestions: false,
       minLines: 1,
       maxLines: multiline && (!secret || showPrivateKey) ? 6 : 1,
       decoration: InputDecoration(
         labelText: label,
-        suffixIcon: secret && multiline
+        suffixIcon: secret
             ? IconButton(
-                tooltip: showPrivateKey
-                    ? 'Hide private key'
-                    : 'Reveal private key',
-                onPressed: () =>
-                    setState(() => showPrivateKey = !showPrivateKey),
+                tooltip:
+                    '${(key == 'privateKey'
+                            ? showPrivateKey
+                            : key == 'password'
+                            ? showPassword
+                            : showKeyPassphrase) ? 'Hide' : 'Show'} ${key == 'privateKey'
+                        ? 'private key'
+                        : key == 'password'
+                        ? 'password'
+                        : 'key passphrase'}',
+                onPressed: busy
+                    ? null
+                    : () => setState(() {
+                        if (key == 'privateKey') {
+                          showPrivateKey = !showPrivateKey;
+                        } else if (key == 'password') {
+                          showPassword = !showPassword;
+                        } else {
+                          showKeyPassphrase = !showKeyPassphrase;
+                        }
+                      }),
                 icon: Icon(
-                  showPrivateKey
+                  (key == 'privateKey'
+                          ? showPrivateKey
+                          : key == 'password'
+                          ? showPassword
+                          : showKeyPassphrase)
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                 ),
