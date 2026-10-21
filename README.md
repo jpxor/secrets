@@ -14,6 +14,12 @@ Android implementation with automated vault/recovery, UI, backup-policy and loca
 
 Licensed under Apache-2.0.
 
+See [component licenses and notices](THIRD_PARTY_LICENSES.md),
+[contributing](CONTRIBUTING.md), [security reporting](SECURITY.md), and
+[changelog](CHANGELOG.md). Homepage/privacy/support source is in `web/`;
+[publication and Google production setup](docs/PUBLIC_RELEASE_SETUP.md) records the
+intended URLs and remaining account steps. Preparation does not mean published.
+
 ## Build and run
 
 Requires Android 8 (API 26) or newer. No Android Studio or application backend is needed.

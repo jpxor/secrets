@@ -1,0 +1,15 @@
+{
+  "status": "prepared-not-published",
+  "projectId": "booming-banner-512323-p7",
+  "appName": "Secrets",
+  "homepage": "https://jpxor.github.io/secrets/",
+  "privacyPolicy": "https://jpxor.github.io/secrets/privacy.html",
+  "support": "https://github.com/jpxor/secrets/issues",
+  "authorizedDomainCandidate": "jpxor.github.io",
+  "searchConsoleUrlPrefix": "https://jpxor.github.io/secrets/",
+  "searchConsoleVerification": "challenge-prepared-not-verified",
+  "audienceCurrent": "Testing",
+  "audienceTarget": "In production",
+  "scopes": ["https://www.googleapis.com/auth/drive.appdata"],
+  "androidIdentity": "google-drive.public.json"
+}

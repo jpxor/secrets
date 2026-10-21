@@ -53,6 +53,10 @@ These are release tests, not a request to clear the owner's current app data. A 
 
 ## Google production configuration
 
+Prepared repository/Pages content and the exact Google production worksheet are in
+[PUBLIC_RELEASE_SETUP.md](PUBLIC_RELEASE_SETUP.md). Publication, domain acceptance
+and general-user validation must be recorded separately from preparation.
+
 - Use the existing registered release package/signing fingerprint. Prepare separate development/test registration with a debug identity for future work; do not replace the release signing key or silently redirect existing backups to a different app identity.
 - Finish homepage/privacy policy and any required terms/support/authorized-domain information in Google Auth Platform. Verify ownership of domains where required; validate whether the chosen GitHub Pages URL meets Google's ownership checks before committing to it. A custom domain, if required, is a maintainer cost decision, not an application server.
 - Keep only `drive.appdata`, classified by Google as non-sensitive. Complete the applicable branding/review process and publish the audience when ready. Do not assume non-sensitive means all publishing requirements disappear.
