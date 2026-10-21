@@ -1,15 +1,14 @@
 {
-  "status": "prepared-not-published",
+  "status": "production-branding-verified-and-published",
   "projectId": "booming-banner-512323-p7",
   "appName": "Secrets",
-  "homepage": "https://jpxor.github.io/secrets/",
-  "privacyPolicy": "https://jpxor.github.io/secrets/privacy.html",
+  "homepage": "https://www.wallust.com/secrets/",
+  "privacyPolicy": "https://www.wallust.com/secrets/privacy.html",
   "support": "https://github.com/jpxor/secrets/issues",
-  "authorizedDomainCandidate": "jpxor.github.io",
-  "searchConsoleUrlPrefix": "https://jpxor.github.io/secrets/",
-  "searchConsoleVerification": "challenge-prepared-not-verified",
-  "audienceCurrent": "Testing",
-  "audienceTarget": "In production",
+  "authorizedDomain": "wallust.com",
+  "branding": "verified-and-shown-to-users",
+  "audienceCurrent": "In production",
+  "nonTestAccountValidation": "pending",
   "scopes": ["https://www.googleapis.com/auth/drive.appdata"],
   "androidIdentity": "google-drive.public.json"
 }

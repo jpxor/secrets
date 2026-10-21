@@ -16,11 +16,11 @@ Updated 2026-10-20. Target the smallest honest public beta, then a stable releas
 | Priority | Work | Owner | Completion evidence |
 | --- | --- | --- | --- |
 | P0, complete | Freeze the reduced provider scope; remove unused code/dependencies, update docs and reject legacy provider configurations clearly | Development | Commit `39b3382`; 12 Flutter + 7 native tests, full checks and signed APK pass; phone disconnected, so this build still needs device retest |
-| P0, parallel | Choose GitHub repository/owner and GitHub Pages address; confirm public support/security-reporting contacts | Maintainer | Final URLs and ownership recorded; no invented placeholders published |
-| P0, parallel | Prepare homepage, privacy policy, support/recovery guide and release limitations | Development + maintainer | Reviewable files; published Pages URLs after approval |
+| P0, complete | Choose GitHub repository/owner and GitHub Pages address; confirm public support/security-reporting contacts | Maintainer | jpxor/secrets; https://www.wallust.com/secrets/; Issues and GitHub private vulnerability reporting |
+| P0, complete | Prepare and publish homepage, privacy policy, support/recovery guide and release limitations | Development + maintainer | Live Pages site verified over HTTPS; see PUBLIC_RELEASE_SETUP.md |
 | P0 | Prove portable recovery and safe failure on a spare device or isolated test installation | Maintainer-assisted device testing | Saved test report described below; no access to real user passphrases |
 | P0 | Review security-sensitive paths and release dependencies; fix discovered data-loss/authentication bugs | Development + another reviewer where available | Findings closed or explicitly assessed; no known data-loss/authentication-bypass issue |
-| P0 | Finish Google production branding/audience setup against the final Pages URLs | Maintainer-assisted account setup | Required Google review completed and a non-test-listed account can authorize/upload/restore |
+| P0, configuration complete; live validation open | Finish Google production branding/audience setup against the final Pages URLs | Maintainer-assisted account setup | External/In production, branding verified/published; non-test-account authorization/upload/restore remains unverified |
 | P0 | Secure and prove the release signing/upgrade process | Maintainer + development | Recoverable key/password backup and successful data-preserving upgrade |
 | P0 | Publish source and a tagged, signed beta with checksums and limitations | Maintainer-approved publication | Repository, release tag, source commit, signed APK, checksum and CI results agree |
 | P1 | Observe beta feedback, resolve regressions and promote the tested build to stable | Maintainer + testers | Stable-release gate below |
@@ -53,9 +53,9 @@ These are release tests, not a request to clear the owner's current app data. A 
 
 ## Google production configuration
 
-Prepared repository/Pages content and the exact Google production worksheet are in
-[PUBLIC_RELEASE_SETUP.md](PUBLIC_RELEASE_SETUP.md). Publication, domain acceptance
-and general-user validation must be recorded separately from preparation.
+Published repository/Pages URLs and saved Google production configuration are in
+[PUBLIC_RELEASE_SETUP.md](PUBLIC_RELEASE_SETUP.md). Branding is verified/published;
+general-user authorization and fresh-device recovery remain separate validation.
 
 - Use the existing registered release package/signing fingerprint. Prepare separate development/test registration with a debug identity for future work; do not replace the release signing key or silently redirect existing backups to a different app identity.
 - Finish homepage/privacy policy and any required terms/support/authorized-domain information in Google Auth Platform. Verify ownership of domains where required; validate whether the chosen GitHub Pages URL meets Google's ownership checks before committing to it. A custom domain, if required, is a maintainer cost decision, not an application server.
