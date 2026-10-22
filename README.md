@@ -14,9 +14,9 @@ Android implementation with automated vault/recovery, UI, backup-policy and SFTP
 
 Licensed under Apache-2.0.
 
-[Homepage](https://www.wallust.com/secrets/) ·
-[Privacy policy](https://www.wallust.com/secrets/privacy.html) ·
-[Recovery and support](https://www.wallust.com/secrets/support.html) ·
+[Homepage](https://jpxor.github.io/secrets/) ·
+[Privacy policy](https://jpxor.github.io/secrets/privacy.html) ·
+[Recovery and support](https://jpxor.github.io/secrets/support.html) ·
 [GitHub Issues](https://github.com/jpxor/secrets/issues)
 
 See [component licenses and notices](THIRD_PARTY_LICENSES.md),
