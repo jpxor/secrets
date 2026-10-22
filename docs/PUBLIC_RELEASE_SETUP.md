@@ -7,16 +7,16 @@ separate from publishing source, the website and Google account configuration.
 
 - Repository: https://github.com/jpxor/secrets, default branch `main`.
 - Git remote: `git@github.com:jpxor/secrets.git`; use the maintainer's existing SSH identity.
-- Homepage: https://www.wallust.com/secrets/.
-- Privacy policy: https://www.wallust.com/secrets/privacy.html.
-- Recovery/support: https://www.wallust.com/secrets/support.html.
+- Homepage: https://jpxor.github.io/secrets/.
+- Privacy policy: https://jpxor.github.io/secrets/privacy.html.
+- Recovery/support: https://jpxor.github.io/secrets/support.html.
 - Public support: https://github.com/jpxor/secrets/issues.
 - Private vulnerability reports: https://github.com/jpxor/secrets/security/advisories/new.
 
-GitHub project Pages inherits the account's existing `www.wallust.com` domain.
-No DNS or main-site changes were made. The originally proposed github.io URLs are
-not the configured canonical URLs. The unused, unverified github.io Search Console
-challenge was removed from the homepage; no ownership claim is made for that property.
+On 2026-10-22, Wallust moved to its existing `jpxor/wallust` repository, freeing
+the account site and project sites to use `jpxor.github.io`. Secrets remains in
+its own repository and Pages deployment. See DOMAIN_MIGRATION.md for cutover
+evidence, Google branding status and compatibility URLs.
 
 ## Repository and Pages operations
 
@@ -44,20 +44,24 @@ Public production metadata is in config/google-production.public.json. No web cl
 secret, new signing key, API key or service account was created. Existing backups
 remain associated with the same app/project identity.
 
-| Field | Saved and verified value |
+| Field | Current configuration |
 | --- | --- |
 | App name | Secrets |
-| Homepage | https://www.wallust.com/secrets/ |
-| Privacy policy | https://www.wallust.com/secrets/privacy.html |
+| Homepage | https://jpxor.github.io/secrets/ |
+| Privacy policy | https://jpxor.github.io/secrets/privacy.html |
 | Terms | Empty; no separate terms document |
-| Authorized domain | wallust.com |
+| Authorized domain | jpxor.github.io |
 | Audience | External / In production |
 | Scope | https://www.googleapis.com/auth/drive.appdata only |
-| Branding | Verified and published; Google says it is being shown to users |
+| Branding | New URLs saved; homepage ownership verified; branding re-verification/publication pending |
 | Support/developer email | Previously approved account-managed contacts, retained in Cloud only |
 
-The existing domain is present in the maintainer's Search Console. Google's automated
-branding verification succeeded against the live URLs and the result was published.
+The previous wallust.com branding was verified and published on 2026-10-20.
+On 2026-10-22 Google accepted the github.io URLs and authorized domain, but
+re-verification reported that the new homepage was not registered to the owner.
+The deployed HTML meta challenge verified homepage ownership in Search Console
+on 2026-10-22. After Google's stated 24-hour propagation interval, re-verify and
+publish branding. Do not describe saved draft URLs as published branding.
 Verification Center states that data-access verification is not required because
 no sensitive or restricted scopes are requested. These are observed Console results,
 not a claim that the app passed an independent security review or recovery acceptance.

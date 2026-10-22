@@ -17,7 +17,7 @@ Updated 2026-10-21. The maintainer has accepted all app features, including manu
 | Priority | Work | Owner | Completion evidence |
 | --- | --- | --- | --- |
 | P0, complete | Freeze the reduced provider scope; remove unused code/dependencies, update docs and reject legacy provider configurations clearly | Development | Commit `39b3382`; 12 Flutter + 7 native tests, full checks and signed APK pass; phone disconnected, so this build still needs device retest |
-| P0, complete | Choose GitHub repository/owner and GitHub Pages address; confirm public support/security-reporting contacts | Maintainer | jpxor/secrets; https://www.wallust.com/secrets/; Issues and GitHub private vulnerability reporting |
+| P0, complete | Choose GitHub repository/owner and GitHub Pages address; confirm public support/security-reporting contacts | Maintainer | jpxor/secrets; https://jpxor.github.io/secrets/; Issues and GitHub private vulnerability reporting |
 | P0, complete | Prepare and publish homepage, privacy policy, support/recovery guide and release limitations | Development + maintainer | Live Pages site verified over HTTPS; see PUBLIC_RELEASE_SETUP.md |
 | P0, complete | Validate manual and Google Drive backup/restore | Maintainer-assisted device testing | Maintainer confirmed both backup/restore round trips successful on 2026-10-20; see PROGRESS.md |
 | P0 | Complete recovery failure cases and remaining device acceptance conditions | Maintainer-assisted device testing | Safe-failure, fresh-device independence, SFTP and broader device checks below; successful round trips alone do not establish these conditions |
