@@ -1,5 +1,13 @@
 # Implementation progress
 
+## Security source review — 2026-10-23
+
+- Reviewed application source at b34074c2770974addd4d9f5681671a59816e40f6 across vault cryptography/session state, all Flutter UI and bridge code, native persistence/biometrics/clipboard/documents, background workers, Drive/SFTP, diagnostics and Android backup/transfer configuration. Added docs/SECURITY_REVIEW.md with a complete application data-path inventory and code-linked findings. No application behavior was changed or finding remediated in this documentation task.
+- No application-authored plaintext record/passphrase persistence, logging or provider-upload path was found. Two medium findings remain open: default selection copy/cut bypasses sensitive clipboard handling, and default external text actions can disclose selected plaintext to another app. Three low findings cover service/search keyboard defaults, incomplete transient-memory cleanup and abandoned native provider-setup credential retention. The review explicitly preserves keyboard/OS/accessibility, metadata, offline guessing and replay limitations.
+- Two temporary widget probes against EditorPage reproduced the clipboard and external-action paths with synthetic text and mocked OS channels; both passed and the temporary file was removed. No user vault, passphrase, saved provider credentials or private keys were accessed. No actual clipboard read, external app launch, live provider access, memory capture or new physical-device test was performed.
+- ./scripts/check.ps1 passed formatting, static analysis, all 16 Flutter tests, native JVM test task, Android lint, signing/property tooling checks and a debug APK build. Native test outputs were initially up to date; a subsequent :app:testDebugUnitTest --rerun freshly passed all 14 native tests. The first sandbox attempt encountered network/tool-access restrictions; the successful full run used approved execution outside the sandbox. Existing Gradle/SDK deprecation/version warnings remain. No signed-release build or installation was needed or performed for these documentation-only changes.
+- This is an AI-assisted source review, not an independent professional audit or proof that no vulnerabilities remain. Links identify the exact reviewed revision; follow-up application fixes need regression tests and renewed checks.
+
 ## Manual and Google Drive backup/restore acceptance — 2026-10-20
 
 - The maintainer reports completing both the manual backup/restore process and the Google Drive backup/restore process successfully, and explicitly requests marking that task complete. Both round-trip acceptance items are now complete in RELEASE_PLAN.md.

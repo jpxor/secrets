@@ -33,4 +33,4 @@ trust-all connection, silent pin update or credential-bearing probe is used.
 Users should compare the displayed fingerprint with the server owner through an
 independent trusted channel; confirmation alone cannot authenticate a first contact.
 
-Test wrong passphrases, tampering, format bounds, replacement-phone recovery, stale upload ordering, interrupted persistence and failed retries. Native biometric binding, clipboard replacement and screen locking need real-device checks. No security audit has yet been performed.
+Test wrong passphrases, tampering, format bounds, replacement-phone recovery, stale upload ordering, interrupted persistence and failed retries. Native biometric binding, clipboard replacement and screen locking need real-device checks. An [AI-assisted source review](SECURITY_REVIEW.md) records the reviewed revision, data-path inventory, validation limits and open findings, including default selection-menu clipboard and external-app disclosure paths. No independent professional security audit has yet been performed.
