@@ -4,6 +4,8 @@ An offline-first, open-source Android secrets keeper. Flutter/Dart UI and portab
 
 Android implementation with automated vault/recovery, UI, backup-policy and SFTP transport tests. The maintainer has verified the app's features, including manual, Google Drive and SFTP backup/restore, on a Samsung SM-A546W running Android 16/API 36. The first public release is a beta; broader device coverage and an independent security audit remain open. See [releases](https://github.com/jpxor/secrets/releases), [requirements](docs/SPECIFICATION.md), [development](docs/DEVELOPMENT.md), [provider setup](docs/PROVIDERS.md), [verification checklist](docs/TESTING.md), and [security design](docs/SECURITY.md).
 
+Read [how vault encryption works](docs/ENCRYPTION.md) for a short step-by-step explanation with links to the implementing code. The [AI-assisted security review](docs/SECURITY_REVIEW.md) inventories the data paths and records open findings, including plaintext disclosure through default text-selection controls.
+
 ## Features
 
 - Encrypted service / username / secret records; search by service only.
