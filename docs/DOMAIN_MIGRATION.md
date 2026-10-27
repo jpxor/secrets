@@ -1,5 +1,31 @@
 # Wallust domain migration
 
+## Current decision — 2026-10-27
+
+The canonical Secrets website remains https://jpxor.github.io/secrets/.
+Google branding uses https://www.wallust.com/secrets/ and
+https://www.wallust.com/secrets/privacy.html with authorized domain wallust.com.
+Saving this previously verified configuration restored Google's explicit
+"branding verified and shown to users" state. No manual appeal was submitted;
+the prepared appeal was not certified or sent, and automatic retries were deleted.
+
+Wallust PR #1 reduces docs/secrets/ to two self-contained files: a minimal
+app homepage describing functionality and Google Drive data use, and the full
+privacy policy. Both have canonical tags pointing to the corresponding github.io
+pages. The duplicate recovery/support page and stylesheet are removed; the
+existing known-prefix 404 forwarding preserves old support links. Wallust remains
+in its independent repository; other projects keep their github.io hosting.
+No Android OAuth client, certificate, scope, contacts or audience changed.
+No new device/provider round trip is claimed.
+
+Search Console had verified the /secrets/ URL-prefix property on October 22
+and the account-root URL-prefix property on October 26 (account-site commit
+4ebcc68). Google still rejected automatic branding ownership on October 27
+after propagation. These were HTML-tag URL-prefix verifications, not DNS Domain
+Properties; this does not establish a universal ban on GitHub Pages domains.
+
+The sections below record the earlier cutover and superseded verification plan.
+
 ## Cutover on 2026-10-22
 
 The maintainer approved using the existing jpxor/wallust repository for a simple
@@ -28,7 +54,7 @@ old root CNAME and adds the neutral project index. Original content remains in
 Git history. No publisher webhook was configured on the account repository.
 Future external Publii publishers must not restore the account custom domain.
 
-## Compatibility and project updates
+## Earlier compatibility and project updates
 
 Wallust temporarily serves copies of Secrets' public homepage, privacy, support
 and stylesheet at the old /secrets/ addresses. Their Git blob hashes were checked
@@ -54,7 +80,7 @@ Secrets README and canonical tags now use github.io, with the public Search
 Console verification meta tag in the homepage. Its protected main branch requires
 checks and a PR; see https://github.com/jpxor/secrets/pull/2.
 
-## Google production status
+## Earlier Google production verification attempt
 
 Project booming-banner-512323-p7 accepted and saved homepage
 https://jpxor.github.io/secrets/, privacy policy
