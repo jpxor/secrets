@@ -47,21 +47,28 @@ remain associated with the same app/project identity.
 | Field | Current configuration |
 | --- | --- |
 | App name | Secrets |
-| Homepage | https://jpxor.github.io/secrets/ |
-| Privacy policy | https://jpxor.github.io/secrets/privacy.html |
+| Google homepage | https://www.wallust.com/secrets/ |
+| Google privacy policy | https://www.wallust.com/secrets/privacy.html |
 | Terms | Empty; no separate terms document |
-| Authorized domain | jpxor.github.io |
+| Authorized domain | wallust.com |
 | Audience | External / In production |
 | Scope | https://www.googleapis.com/auth/drive.appdata only |
-| Branding | New URLs saved; homepage ownership verified; branding re-verification/publication pending |
+| Branding | Verified and shown to users after restoring Wallust URLs on 2026-10-27 |
 | Support/developer email | Previously approved account-managed contacts, retained in Cloud only |
 
-The previous wallust.com branding was verified and published on 2026-10-20.
-On 2026-10-22 Google accepted the github.io URLs and authorized domain, but
-re-verification reported that the new homepage was not registered to the owner.
-The deployed HTML meta challenge verified homepage ownership in Search Console
-on 2026-10-22. After Google's stated 24-hour propagation interval, re-verify and
-publish branding. Do not describe saved draft URLs as published branding.
+On 2026-10-27, the maintainer chose to retain the previously verified Wallust
+URLs for Google branding. Saving those URLs and wallust.com immediately restored
+the Console state: branding verified and shown to users. The GitHub Pages
+URL-prefix ownership experiment was stopped; no manual appeal was submitted,
+and its follow-up automation was deleted.
+
+The canonical public website remains https://jpxor.github.io/secrets/.
+Wallust hosts only a minimal static app homepage and the full privacy policy,
+with canonical tags pointing to the corresponding github.io pages. Its homepage
+links to the same Wallust privacy URL saved in Google. Google URLs must remain
+directly accessible rather than redirecting to another domain. Full recovery,
+support and downloads stay on the canonical project website.
+
 Verification Center states that data-access verification is not required because
 no sensitive or restricted scopes are requested. These are observed Console results,
 not a claim that the app passed an independent security review or recovery acceptance.
